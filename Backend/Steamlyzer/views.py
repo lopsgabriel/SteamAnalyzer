@@ -1,10 +1,12 @@
 from rest_framework.viewsets import ViewSet
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from datetime import datetime
 import aiohttp
 import asyncio
 import os
 import nest_asyncio
+import requests
 
 nest_asyncio.apply()
 
@@ -23,7 +25,6 @@ class SteamAnalyzerViewSet(ViewSet):
         url = f"https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?key={STEAM_API_KEY}&steamid={steam_id}&include_appinfo=1&include_played_free_games=1"
 
         # Continua usando requests aqui, pra manter o mínimo de mudanças
-        import requests
         response = requests.get(url)
 
         if response.status_code != 200:
@@ -31,6 +32,15 @@ class SteamAnalyzerViewSet(ViewSet):
 
         data = response.json()
         games = data.get("response", {}).get("games", [])
+
+        async def fetch_user_profile(session):
+            try:
+                url = f"https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key={STEAM_API_KEY}&steamids={steam_id}"
+                async with session.get(url) as resp:
+                    data = await resp.json()
+                    return data
+            except Exception:
+                return {"erro": "Erro ao buscar dados do perfil da Steam"}
 
 
         # Define a função async pra buscar a categoria e genero do jogo
@@ -117,9 +127,23 @@ class SteamAnalyzerViewSet(ViewSet):
             async with aiohttp.ClientSession() as session:
                 tasks = [fetch_details(session, game) for game in games]
                 return await asyncio.gather(*tasks)
+        
+        async def gather_user_profile():
+            async with aiohttp.ClientSession() as session:
+                profile_data = await fetch_user_profile(session)
+                return profile_data
             
         genres_hours = {}
         categories_hours = {}
+
+        user_profile_data = asyncio.run(gather_user_profile())
+        user_data = user_profile_data.get("response", {}).get("players", [{}])[0]
+        timecreated = user_data.get("timecreated", 0)
+        created_at = datetime.fromtimestamp(timecreated)
+        now = datetime.now()
+        delta = now - created_at
+        days_since_creation = delta.days
+
         games_data = asyncio.run(gather_data())
         shorter_games_data = []
         for game_data in games_data:
@@ -149,6 +173,12 @@ class SteamAnalyzerViewSet(ViewSet):
         result = {
             "info": {
                 "steam_id": steam_id,
+                "Username": user_data.get("personaname", "Unknown"),
+                "Profile URL": f"https://steamcommunity.com/profiles/{steam_id}/",
+                "Avatar URL": user_data.get("avatarfull", ""),
+                "Date Joined": created_at.strftime("%d-%m-%Y"),
+                "Days on Steam": days_since_creation,
+                "Visibility State": user_data.get("communityvisibilitystate", ""),
                 "total games": len(games),
                 "total time played": sum(int(game["playtime_forever"]) for game in games if isinstance(game, dict) and "playtime_forever" in game) / 60,
                 "total time played per genre": dict(sorted(genres_hours.items(), key=lambda item: item[1], reverse=True)[:8]),
