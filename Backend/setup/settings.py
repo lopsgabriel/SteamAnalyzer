@@ -113,3 +113,18 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Configuração de CORS (Cross-Origin Resource Sharing)
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",  # Permite o front-end local acessar a API
+    "http://127.0.0.1:5173",
+]
+
+CORS_ALLOW_HEADERS = [
+    'content-type',
+    'authorization',
+    'Access-Control-Allow-Origin',
+    'Access-Control-Allow-Credentials',
+]
+
+CORS_ALLOW_CREDENTIALS = True  # Permite envio de cookies de autenticação

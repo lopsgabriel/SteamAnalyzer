@@ -7,139 +7,256 @@ import asyncio
 import os
 import nest_asyncio
 import requests
+import re
+import time
+
+semaphore = asyncio.Semaphore(5)
 
 nest_asyncio.apply()
 
 STEAM_API_KEY = str(os.getenv("STEAM_API_KEY"))
 
+def make_request_with_retry(url):
+    retries = 5
+    delay = 1  # Delay inicial de 1 segundo
+    for i in range(retries):
+        print(f"Tentando novamente ({i+1}/{retries})...")
+        response = requests.get(url)
+        if response.status_code == 200:
+            return response.json()
+        time.sleep(delay)
+        delay *= 2  # Exponencia o tempo de espera
+    return None
+
+def resolve_vanity_url(custom_url):
+    print("mandando 1 request 1")
+    resolve_url = f"https://api.steampowered.com/ISteamUser/ResolveVanityURL/v1/?key={STEAM_API_KEY}&vanityurl={custom_url}"
+    response = requests.get(resolve_url)
+    data = response.json()
+
+    if data["response"]["success"] == 1:
+        return data["response"]["steamid"]
+    return None
+
+def verifica_steamid_or_vanity_url(steam_id):
+
+    # verifica se é uma url completa com o id64
+    match_profiles = re.search(r"steamcommunity\.com/profiles/(\d+)", steam_id)
+    if match_profiles:
+        return match_profiles.group(1)
+    
+    #verifica se é um vanity url e retorna o steam id64
+    match_id = re.search(r"steamcommunity\.com/id/([\w-]+)", steam_id)
+    if match_id:
+        custom_url = match_id.group(1)
+        print("mandando 1 request 2")
+        resolve_url = f"https://api.steampowered.com/ISteamUser/ResolveVanityURL/v1/?key={STEAM_API_KEY}&vanityurl={custom_url}"
+        response = requests.get(resolve_url)
+        data = response.json()
+
+        if response.status_code != 200:
+            data =make_request_with_retry(resolve_url)
+            print("Erro ao chamar API da Steam:", response.status_code, response.text)
+
+
+        if data["response"]["success"] == 1:
+            print(data["response"]["steamid"])
+            return data["response"]["steamid"]
+        else:
+            return None
+    #verifica se é o id64 direto
+    if re.fullmatch(r"\d{17}", steam_id):
+        return steam_id
+    
+    if re.fullmatch(r"[\w-]+", steam_id):
+        return resolve_vanity_url(steam_id)
+    
+    return None
+
+async def fetch_game_genres(session, game):
+    await asyncio.sleep(1.5)
+    appid = game["appid"]
+    print("mandando 1 request 6")
+    game_details_url = f"https://store.steampowered.com/api/appdetails?appids={appid}"
+    try:
+        async with session.get(game_details_url) as resp:
+            data = await resp.json()
+
+        if resp.status != 200:
+
+            data = make_request_with_retry(game_details_url)
+
+            print("Erro ao chamar API da Steam:", resp.status_code, resp.text)
+
+        game_details = data.get(str(appid), {}).get("data", {})
+
+        raw_categories = game_details.get("categories", [])
+        raw_genres = game_details.get("genres", [])
+
+        game_categories = [cat["description"] for cat in raw_categories]
+        game_genres = [gen["description"] for gen in raw_genres]
+        return {
+            "categories": game_categories[0:6],
+            "genres": game_genres[0:6]
+        }
+    except Exception:
+        return {
+            "categories": "",
+            "genres": ""
+        }
+    
+
+    
+# Define a função async pra buscar conquistas
+async def fetch_details(session, game, steam_id, most_played_games):
+    await asyncio.sleep(1.5)
+    appid = game["appid"]
+    game_name = game.get("name", "Jogo Desconhecido")
+    achievements_url = (
+        f"https://api.steampowered.com/ISteamUserStats/GetPlayerAchievements/v1/"
+        f"?appid={appid}&key={STEAM_API_KEY}&steamid={steam_id}"
+    )
+
+    if game in most_played_games:
+        try:
+            print("mandando 1 request 5")
+            async with session.get(achievements_url) as resp:
+                data = await resp.json()
+                achievements = data.get("playerstats", {}).get("achievements", [])
+                conquered = [
+                    {
+                        "apiname": ach["apiname"],
+                        "unlocktime": ach["unlocktime"]
+                    }
+                    for ach in achievements if ach["achieved"] == 1
+                ]
+                not_conquered = [
+                    ach for ach in achievements if ach["achieved"] == 0
+                ]
+                total_achievements = len(conquered) + len(not_conquered)
+
+
+                if game.get("playtime_forever") <= 60:
+                    return {
+                        "game": game_name,
+                        "progress_achievements": 0,
+                        "time_played": 0,
+                        "categories": [],
+                        "genres": []
+                    }      
+                
+                game_details = await fetch_game_genres(session, game)
+
+                return {
+                    "game": game_name,
+                    "total_achieved": total_achievements,
+                    "progress_achievements": round((len(conquered) / total_achievements) * 100),
+                    "time_played": round(int(game["playtime_forever"]) / 60),
+                    "categories": game_details["categories"],
+                    "genres": game_details["genres"]
+                }
+            
+        except Exception:
+            return {
+                "game": game_name,
+                "total_achieved": 0,
+                "progress_achievements": 0,
+                "time_played": round(int(game["playtime_forever"]) / 60),
+                "categories": game_details["categories"],
+                "genres": game_details["genres"]
+            }
+    else:
+        game_details = await fetch_game_genres(session, game)
+        return {
+            "game": game_name,
+            "total_achieved": 0,
+            "progress_achievements": 0,
+            "time_played": round(int(game["playtime_forever"]) / 60),
+            "categories": game_details["categories"],
+            "genres": game_details["genres"]
+        }
+    
+
+async def fetch_user_profile(session, steam_id):
+    try:
+        print("mandando 1 request 4")
+        url = f"https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key={STEAM_API_KEY}&steamids={steam_id}"
+        time.sleep(0.5)
+
+        async with session.get(url) as resp:
+
+            if resp.status != 200:  # Corrigido aqui
+                data = make_request_with_retry(url)
+                if data:
+                    return data
+                print(f"Erro ao chamar API da Steam: {resp.status}")
+                error_message = await resp.text()  # Pega a resposta em texto
+                print(f"Mensagem de erro: {error_message}")
+                return {"erro": f"Erro ao buscar dados do perfil da Steam: {resp.status} - {error_message}"}
+
+            data = await resp.json()
+            return data
+        
+    except Exception as e:
+        print(f"Erro ao buscar dados do perfil da Steam: {str(e)}")
+        return {"erro": f"Erro ao buscar dados do perfil da Steam: {str(e)}"}
 
 class SteamAnalyzerViewSet(ViewSet):
 
     @action(detail=False, methods=["get"])
     def analyze(self, request):
-        steam_id = request.query_params.get("steam_id")
+        try:
+            steam_id = request.query_params.get("steam_id")
 
-        if not steam_id:
-            return Response({"error": "steam_id is required"}, status=400)
+            if not steam_id:
+                return Response({"error": "steam_id is required"}, status=400)
+            
+            steam_id = verifica_steamid_or_vanity_url(steam_id)
+            if not steam_id:
+                return Response({"error": "steam_id is invalid"}, status=400)
+            
+            print("mandando 1 request 3")
+            #busca jogos do usuario pela steamID          
+            url = f"https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?key={STEAM_API_KEY}&steamid={steam_id}&include_appinfo=1&include_played_free_games=1"
+            response = requests.get(url)
 
-        url = f"https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?key={STEAM_API_KEY}&steamid={steam_id}&include_appinfo=1&include_played_free_games=1"
+            if response.status_code != 200:
+                response = make_request_with_retry(url)
+                print("Erro ao chamar API da Steam:", response.status_code, response.text)
 
-        # Continua usando requests aqui, pra manter o mínimo de mudanças
-        response = requests.get(url)
-
-        if response.status_code != 200:
+        except Exception:
             return Response({"error": "Erro ao buscar dados da Steam"}, status=500)
 
+        if response.status_code != 200:
+            print("Erro ao chamar API da Steam:", response.status_code, response.text)
+            return Response({"error": "Erro ao buscar jogos da Steam"}, status=500)
         data = response.json()
+
         games = data.get("response", {}).get("games", [])
-
-        async def fetch_user_profile(session):
-            try:
-                url = f"https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key={STEAM_API_KEY}&steamids={steam_id}"
-                async with session.get(url) as resp:
-                    data = await resp.json()
-                    return data
-            except Exception:
-                return {"erro": "Erro ao buscar dados do perfil da Steam"}
-
-
-        # Define a função async pra buscar a categoria e genero do jogo
-        async def fetch_game_genres(session, game):
-            appid = game["appid"]
-            game_details_url = f"https://store.steampowered.com/api/appdetails?appids={appid}"
-            try:
-              async with session.get(game_details_url) as resp:
-                data = await resp.json()
-                game_details = data.get(str(appid), {}).get("data", {})
-
-                raw_categories = game_details.get("categories", [])
-                raw_genres = game_details.get("genres", [])
-
-                game_categories = [cat["description"] for cat in raw_categories]
-                game_genres = [gen["description"] for gen in raw_genres]
-
-                return {
-                    "categories": game_categories[0:6],
-                    "genres": game_genres[0:6]
-                }
-            except Exception:
-                return {
-                    "categories": "",
-                    "genres": ""
-                }
-
-        # Define a função async pra buscar conquistas
-        async def fetch_details(session, game):
-            appid = game["appid"]
-            game_name = game.get("name", "Jogo Desconhecido")
-            achievements_url = (
-                f"https://api.steampowered.com/ISteamUserStats/GetPlayerAchievements/v1/"
-                f"?appid={appid}&key={STEAM_API_KEY}&steamid={steam_id}"
-            )
-            try:
-                async with session.get(achievements_url) as resp:
-                    data = await resp.json()
-                    achievements = data.get("playerstats", {}).get("achievements", [])
-                    conquered = [
-                        {
-                            "apiname": ach["apiname"],
-                            "unlocktime": ach["unlocktime"]
-                        }
-                        for ach in achievements if ach["achieved"] == 1
-                    ]
-                    not_conquered = [
-                        ach for ach in achievements if ach["achieved"] == 0
-                    ]
-                    total_achievements = len(conquered) + len(not_conquered)
-
-                    game_details = await fetch_game_genres(session, game)
-
-                    if game.get("playtime_forever") <= 60:
-                        return {
-                          "game": game_name,
-                          "progress_achievements": 0,
-                          "time_played": 0,
-                          "categories": [],
-                          "genres": []
-                        }
-                    
-                    return {
-                      "game": game_name,
-                      "total_achieved": total_achievements,
-                      "progress_achievements": round((len(conquered) / total_achievements) * 100),
-                      "time_played": round(int(game["playtime_forever"]) / 60),
-                      "categories": game_details["categories"],
-                      "genres": game_details["genres"]
-                    }
-                
-            except Exception:
-                return {
-                  "game": game_name,
-                  "total_achieved": 0,
-                  "progress_achievements": 0,
-                  "time_played": round(int(game["playtime_forever"]) / 60),
-                  "categories": game_details["categories"],
-                  "genres": game_details["genres"]
-                }
+        most_played_games = sorted(games, key=lambda x: x["playtime_forever"], reverse=True)[:10]
+        print(most_played_games)
 
         # Junta tudo em uma função assíncrona que será executada com asyncio.run
         async def gather_data():
             async with aiohttp.ClientSession() as session:
-                tasks = [fetch_details(session, game) for game in games]
+                tasks = [fetch_details(session, game, steam_id, most_played_games) for game in games]
                 return await asyncio.gather(*tasks)
         
         async def gather_user_profile():
             async with aiohttp.ClientSession() as session:
-                profile_data = await fetch_user_profile(session)
+                profile_data = await fetch_user_profile(session, steam_id)
                 return profile_data
             
         genres_hours = {}
         categories_hours = {}
 
         user_profile_data = asyncio.run(gather_user_profile())
+        print("🧠 Dados do perfil retornado:", user_profile_data)
         user_data = user_profile_data.get("response", {}).get("players", [{}])[0]
+
         timecreated = user_data.get("timecreated", 0)
         created_at = datetime.fromtimestamp(timecreated)
+
         now = datetime.now()
         delta = now - created_at
         days_since_creation = delta.days
