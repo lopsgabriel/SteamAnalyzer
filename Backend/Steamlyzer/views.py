@@ -38,7 +38,7 @@ def resolve_vanity_url(custom_url):
         return data["response"]["steamid"]
     return None
 
-def verifica_steamid_or_vanity_url(steam_id):
+def verify_steamid_or_vanity_url(steam_id):
 
     # verifica se é uma url completa com o id64
     match_profiles = re.search(r"steamcommunity\.com/profiles/(\d+)", steam_id)
@@ -211,7 +211,7 @@ class SteamAnalyzerViewSet(ViewSet):
             if not steam_id:
                 return Response({"error": "steam_id is required"}, status=400)
             
-            steam_id = verifica_steamid_or_vanity_url(steam_id)
+            steam_id = verify_steamid_or_vanity_url(steam_id)
             if not steam_id:
                 return Response({"error": "steam_id is invalid"}, status=400)
             
