@@ -9,6 +9,8 @@ import nest_asyncio
 import requests
 import re
 import time
+import json
+
 
 semaphore = asyncio.Semaphore(5)
 
@@ -20,7 +22,7 @@ def make_request_with_retry(url):
     retries = 5
     delay = 1  # Delay inicial de 1 segundo
     for i in range(retries):
-        print(f"Tentando novamente ({i+1}/{retries})...")
+        print(f"Tentando novamente ({i+1}/{retries})... em {url}")
         response = requests.get(url)
         if response.status_code == 200:
             return response.json()
@@ -80,19 +82,31 @@ async def fetch_game_genres(session, game):
     game_details_url = f"https://store.steampowered.com/api/appdetails?appids={appid}"
     try:
         async with session.get(game_details_url) as resp:
-            data = await resp.json()
+            print(f"Status da resposta: {resp.status}")
+            print(f"Content-Type: {resp.headers.get('Content-Type')}")
+            text_data = await resp.text()
+            print("Texto da resposta:", text_data[:300])  # só os 300 primeiros chars pra não lotar o terminal
+
+            # Tenta parsear como JSON depois
+            data = json.loads(text_data)
+            # data = await resp.json()
 
         if resp.status != 200:
-
+            print('vai tentar dnv')
             data = make_request_with_retry(game_details_url)
+            if data == None:
+                return {
+                    "categories": "",
+                    "genres": ""
+                }
+            print("Erro ao chamar API da Steam:", resp.status, resp.text)
 
-            print("Erro ao chamar API da Steam:", resp.status_code, resp.text)
 
         game_details = data.get(str(appid), {}).get("data", {})
 
         raw_categories = game_details.get("categories", [])
         raw_genres = game_details.get("genres", [])
-
+        
         game_categories = [cat["description"] for cat in raw_categories]
         game_genres = [gen["description"] for gen in raw_genres]
         return {
@@ -136,7 +150,7 @@ async def fetch_details(session, game, steam_id, most_played_games):
                 total_achievements = len(conquered) + len(not_conquered)
 
 
-                if game.get("playtime_forever") <= 60:
+                if int(game.get("playtime_forever")) <= 120:
                     return {
                         "game": game_name,
                         "progress_achievements": 0,
@@ -166,15 +180,25 @@ async def fetch_details(session, game, steam_id, most_played_games):
                 "genres": game_details["genres"]
             }
     else:
-        game_details = await fetch_game_genres(session, game)
-        return {
-            "game": game_name,
-            "total_achieved": 0,
-            "progress_achievements": 0,
-            "time_played": round(int(game["playtime_forever"]) / 60),
-            "categories": game_details["categories"],
-            "genres": game_details["genres"]
-        }
+        if int(game.get("playtime_forever")) >= 120:
+            game_details = await fetch_game_genres(session, game)
+            return {
+                "game": game_name,
+                "total_achieved": 0,
+                "progress_achievements": 0,
+                "time_played": round(int(game["playtime_forever"]) / 60),
+                "categories": game_details["categories"],
+                "genres": game_details["genres"]
+            }
+        else:
+            return {
+                "game": game_name,
+                "total_achieved": 0,
+                "progress_achievements": 0,
+                "time_played": round(int(game["playtime_forever"]) / 60),
+                "categories": [],
+                "genres": []
+            }
     
 
 async def fetch_user_profile(session, steam_id):
@@ -237,10 +261,41 @@ class SteamAnalyzerViewSet(ViewSet):
         print(most_played_games)
 
         # Junta tudo em uma função assíncrona que será executada com asyncio.run
-        async def gather_data():
+        async def gather_data_in_batches(games, steam_id, most_played_games):
+            games.sort(key=lambda game: game["playtime_forever"], reverse=True)
+            qtd = sum(1 for jogo in games if jogo.get("playtime_forever", 0) >= 120)
+
+            print(qtd)
+            if qtd >= 310:
+                batch_size = 10
+                sleep_time = 3
+            elif qtd >= 170:
+                batch_size = 20
+                sleep_time = 3
+            elif qtd >= 50:
+                batch_size = 25
+                sleep_time = 2
+            else:
+                batch_size = 30
+                sleep_time = 2 # pode ajustar conforme testes  # pode ajustar conforme testes
+            all_results = []
+
             async with aiohttp.ClientSession() as session:
-                tasks = [fetch_details(session, game, steam_id, most_played_games) for game in games]
-                return await asyncio.gather(*tasks)
+                for i in range(0, len(games), batch_size):
+                    print(f"Processando jogos {i} até {min(i + batch_size, len(games))}")
+                    batch = games[i:i + batch_size]
+
+                    tasks = [
+                        fetch_details(session, game, steam_id, most_played_games)
+                        for game in batch
+                    ]
+                    results = await asyncio.gather(*tasks, return_exceptions=True)
+                    all_results.extend(results)
+
+                    await asyncio.sleep(sleep_time)  # pausa entre os batches
+
+            return all_results
+
         
         async def gather_user_profile():
             async with aiohttp.ClientSession() as session:
@@ -261,7 +316,7 @@ class SteamAnalyzerViewSet(ViewSet):
         delta = now - created_at
         days_since_creation = delta.days
 
-        games_data = asyncio.run(gather_data())
+        games_data = asyncio.run(gather_data_in_batches(games, steam_id, most_played_games))
         shorter_games_data = []
         for game_data in games_data:
             shorter_games_data.append({
