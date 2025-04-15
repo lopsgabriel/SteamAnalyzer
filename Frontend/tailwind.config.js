@@ -1,4 +1,5 @@
 /** @type {import('tailwindcss').Config} */
+
 const daisyui = require("daisyui");
 export default {
   content: [
@@ -7,7 +8,16 @@ export default {
     "./app/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        josefin: ['JosefinSans', 'sans-serif'],
+        bebastech: ['Bebas Neue', 'sans-serif'],
+        onest: ['Onest', 'sans-serif'],
+        orbitron: ['Orbitron', 'sans-serif'],
+        sharetech: ['Share Tech Mono', 'monospace'],
+        sora: ['Sora', 'sans-serif'],
+      }
+    },
   },
-  plugins: [daisyui],
+  plugins: [daisyui, require("tailwindcss-animate")],
 };
