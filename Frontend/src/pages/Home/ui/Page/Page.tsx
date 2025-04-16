@@ -1,11 +1,13 @@
 import { FC, useState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSteam } from '@fortawesome/free-brands-svg-icons'
-import { Typewriter, SteamHistory } from "@/components";
+import { Typewriter, SteamHistory, GenreStats } from "@/components";
 import axios from "axios";
 import { faCircleQuestion } from '@fortawesome/free-solid-svg-icons'
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
+
+// Componentes: SteamHistory, GenreStats, CategoryStats, TopGames, FinalAnalysis
 
 const Home: FC = () => {
   const [steamData, setSteamData] = useState<any | null>(null);
@@ -14,6 +16,12 @@ const Home: FC = () => {
   useEffect(() => {
     if (steamData && analysisRef.current) {
       analysisRef.current.scrollIntoView({ behavior: "smooth" });
+      console.log(steamData.info["total time played"])
+      console.log(steamData.info["total time played per genre"])
+      console.log(steamData.info["total games"])
+    }
+    if (formattedGenreInfo){
+      console.log(`genre info:`, formattedGenreInfo)
     }
   }, [steamData]);
 
@@ -36,6 +44,15 @@ const Home: FC = () => {
     DaysOnSteam: steamData.info["Days on Steam"],
     totalGames: steamData.info["total games"],
     totalTimePlayed: steamData.info["total time played"]
+  } : null;
+
+  const formattedGenreInfo = steamData ? {
+    totalTimePlayed: steamData.info["total time played"],
+    totalTimePlayedPerGenre: Object.entries(steamData.info["total time played per genre"]).map(([genre, time]) => ({
+      genre,
+      time: Number(time),
+    })),
+    totalGames: steamData.info["total games"]
   } : null;
 
   const { ref: inViewRef, inView } = useInView({
@@ -112,7 +129,7 @@ const Home: FC = () => {
                 </div>
               </div>
             </div>
-            {formattedSteamInfo && (
+            {formattedSteamInfo && formattedGenreInfo && (
               <div ref={analysisRef} className="w-full items-center justify-center flex-col flex">
                 <motion.div
                   ref={inViewRef} // Aqui é onde conectamos o observer
@@ -122,6 +139,7 @@ const Home: FC = () => {
                   transition={{ duration: 0.6, ease: 'easeOut' }}
                 >
                   <SteamHistory info={formattedSteamInfo} />
+                  <GenreStats infos={formattedGenreInfo} />
                 </motion.div>
               </div>
             )}

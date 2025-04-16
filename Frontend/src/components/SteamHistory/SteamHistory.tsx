@@ -70,7 +70,7 @@ const SteamHistory: FC<SteamHistoryProps> = ({ info }) => {
   }
 
   return (
-    <div className="bg-base-300 text-white p-6 rounded-2xl border-b-4 hover:shadow-zinc-950 mt-10 duration-300 border-amber-500 shadow-lg flex flex-col items-center gap-3 w-full max-w-2xl mx-auto">
+    <div className="bg-zinc-900 text-white p-6 rounded-2xl border-b-4 hover:shadow-zinc-950 mt-10 duration-300 border-amber-500 shadow-lg flex flex-col items-center gap-3 w-full max-w-2xl mx-auto">
       <img
         src={AvatarURL}
         alt={`${Username}'s avatar`}

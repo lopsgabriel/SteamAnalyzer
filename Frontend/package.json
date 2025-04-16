@@ -16,6 +16,7 @@
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@reduxjs/toolkit": "^2.6.1",
+    "apexcharts": "^4.5.0",
     "clsx": "^2.1.1",
     "framer-motion": "^12.7.2",
     "lucide-react": "^0.488.0",
