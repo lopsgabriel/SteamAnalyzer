@@ -47,12 +47,14 @@ const Home: FC = () => {
   } : null;
 
   const formattedGenreInfo = steamData ? {
+    Username: steamData.info["Username"],
     totalTimePlayed: steamData.info["total time played"],
     totalTimePlayedPerGenre: Object.entries(steamData.info["total time played per genre"]).map(([genre, time]) => ({
       genre,
       time: Number(time),
     })),
-    totalGames: steamData.info["total games"]
+    totalGames: steamData.info["total games"],
+    Top5MostPlayedGames: steamData.info["top 5 games"]
   } : null;
 
   const { ref: inViewRef, inView } = useInView({
