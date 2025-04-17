@@ -18,6 +18,10 @@ nest_asyncio.apply()
 
 STEAM_API_KEY = str(os.getenv("STEAM_API_KEY"))
 
+headers = {
+            'Accept-Language': 'en-US,en;q=0.9'  # força o idioma pra inglês por padrão
+        }
+
 def make_request_with_retry(url):
     retries = 5
     delay = 1  # Delay inicial de 1 segundo
@@ -76,12 +80,11 @@ def verify_steamid_or_vanity_url(steam_id):
     return None
 
 async def fetch_game_genres(session, game):
-    await asyncio.sleep(1.5)
     appid = game["appid"]
     print("mandando 1 request 6")
-    game_details_url = f"https://store.steampowered.com/api/appdetails?appids={appid}"
+    game_details_url = f"https://store.steampowered.com/api/appdetails?appids={appid}&l=en&cc=BR"
     try:
-        async with session.get(game_details_url) as resp:
+        async with session.get(game_details_url, headers=headers) as resp:
             print(f"Status da resposta: {resp.status}")
             print(f"Content-Type: {resp.headers.get('Content-Type')}")
             text_data = await resp.text()
@@ -272,12 +275,12 @@ class SteamAnalyzerViewSet(ViewSet):
             elif qtd >= 170:
                 batch_size = 20
                 sleep_time = 3
-            elif qtd >= 50:
+            elif qtd >= 60:
                 batch_size = 25
                 sleep_time = 2
             else:
                 batch_size = 30
-                sleep_time = 2 # pode ajustar conforme testes  # pode ajustar conforme testes
+                sleep_time = 1 # pode ajustar conforme testes  # pode ajustar conforme testes
             all_results = []
 
             async with aiohttp.ClientSession() as session:
@@ -320,7 +323,7 @@ class SteamAnalyzerViewSet(ViewSet):
         shorter_games_data = []
         for game_data in games_data:
             shorter_games_data.append({
-            "game": game_data.get("game", "Unknown"),
+            "game": game_data.get("game", "Unknown"), 
             "total_achieved": game_data.get("total_achieved", 0),
             "progress_achievements": game_data.get("progress_achievements", []),
             "time_played": game_data.get("time_played", 0),
@@ -329,6 +332,10 @@ class SteamAnalyzerViewSet(ViewSet):
         even_shorter_games_data = (game for game in shorter_games_data if game["time_played"] > 0) 
         even_shorter_games_data = list(even_shorter_games_data)
         even_shorter_games_data.sort(key=lambda game: game["time_played"], reverse=True)
+        top_5_games = [{
+            'name': game["game"],
+            "hours": game["time_played"],
+        } for game in even_shorter_games_data[:5]]
 
         for game in games_data:
             for genre in game["genres"]:
@@ -353,9 +360,11 @@ class SteamAnalyzerViewSet(ViewSet):
                 "Visibility State": user_data.get("communityvisibilitystate", ""),
                 "total games": len(games),
                 "total time played": sum(int(game["playtime_forever"]) for game in games if isinstance(game, dict) and "playtime_forever" in game) / 60,
-                "total time played per genre": dict(sorted(genres_hours.items(), key=lambda item: item[1], reverse=True)[:8]),
-                "total time played per category": dict(sorted(categories_hours.items(), key=lambda item: item[1], reverse=True)[:8]),
-              
+                "total time played per genre": dict(sorted(genres_hours.items(), key=lambda item: item[1], reverse=True)[:6]),
+                "total time played per category": dict(sorted(categories_hours.items(), key=lambda item: item[1], reverse=True)[:6]),
+                # top 5 jogos informando apenas o nome e a quantidade de horas jogadas
+                "top 5 games": top_5_games
+                
             },
             "games": even_shorter_games_data,
         }
