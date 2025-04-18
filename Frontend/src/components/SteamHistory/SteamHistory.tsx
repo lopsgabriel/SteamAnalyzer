@@ -44,8 +44,6 @@ const SteamHistory: FC<SteamHistoryProps> = ({ info }) => {
     
   }, []);
 
-  console.log(Username, ProfileURL, AvatarURL, DateJoined, DaysOnSteam, totalGames, totalTimePlayed);
-
   async function gerarMensagemDaIA(prompt: string) {
     try {
       const response = await axios.post(
@@ -61,7 +59,6 @@ const SteamHistory: FC<SteamHistoryProps> = ({ info }) => {
           },
         }
       );
-      console.log('Resposta da IA:', response.data);
       return response.data;
     } catch (error) {
       console.error('Erro ao gerar resposta da IA:', error);

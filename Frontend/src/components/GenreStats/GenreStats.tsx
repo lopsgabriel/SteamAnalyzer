@@ -38,7 +38,6 @@ const GenreStats: FC<GenreStatsProps> = ({ infos }) => {
 
     const fetchData = async () => {
       const message = await gerarMensagemDaIA(prompt);
-      console.log(percentages2)
 
       setAIMessage(message.candidates[0].content.parts[0].text);
     };
@@ -46,7 +45,6 @@ const GenreStats: FC<GenreStatsProps> = ({ infos }) => {
 
     const el = document.getElementById("pie-chart");
     if (!el) return;
-    console.log("Elemento pie-chart existe?", el);
 
     const chartConfig: ApexOptions = {
       series: percentages2,
@@ -145,7 +143,6 @@ const GenreStats: FC<GenreStatsProps> = ({ infos }) => {
           },
         }
       );
-      console.log('Resposta da 2:', response.data);
       return response.data;
     } catch (error) {
       console.error('Erro ao gerar resposta da IA:', error);

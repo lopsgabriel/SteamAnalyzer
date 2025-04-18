@@ -1,7 +1,7 @@
 import { FC, useState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSteam } from '@fortawesome/free-brands-svg-icons'
-import { Typewriter, SteamHistory, GenreStats } from "@/components";
+import { Typewriter, SteamHistory, GenreStats, TopGames } from "@/components";
 import axios from "axios";
 import { faCircleQuestion } from '@fortawesome/free-solid-svg-icons'
 import { motion } from 'framer-motion';
@@ -16,9 +16,7 @@ const Home: FC = () => {
   useEffect(() => {
     if (steamData && analysisRef.current) {
       analysisRef.current.scrollIntoView({ behavior: "smooth" });
-      console.log(steamData.info["total time played"])
-      console.log(steamData.info["total time played per genre"])
-      console.log(steamData.info["total games"])
+      console.log("Steam Data:", steamData)
     }
     if (formattedGenreInfo){
       console.log(`genre info:`, formattedGenreInfo)
@@ -28,8 +26,8 @@ const Home: FC = () => {
   async function fetchUserData(steamID: string) {
     try {
       const response = await axios.get(`http://127.0.0.1:8000/steam/analyze/?steam_id=${steamID}`);
-      console.log(response.data);
       setSteamData(response.data);
+      console.log("Steam Data:", steamData)
     } catch (error) {
       console.error(error);
     }
@@ -55,6 +53,12 @@ const Home: FC = () => {
     })),
     totalGames: steamData.info["total games"],
     Top5MostPlayedGames: steamData.info["top 5 games"]
+  } : null;
+
+  const formattedTopGamesInfo = steamData ? {
+    Username: steamData.info["Username"],
+    totalGames: steamData.info["total games"],
+    top5games: steamData.games.slice(0, 5)
   } : null;
 
   const { ref: inViewRef, inView } = useInView({
@@ -131,7 +135,7 @@ const Home: FC = () => {
                 </div>
               </div>
             </div>
-            {formattedSteamInfo && formattedGenreInfo && (
+            {formattedSteamInfo && formattedGenreInfo && formattedTopGamesInfo && (
               <div ref={analysisRef} className="w-full items-center justify-center flex-col flex">
                 <motion.div
                   ref={inViewRef} // Aqui é onde conectamos o observer
@@ -142,6 +146,7 @@ const Home: FC = () => {
                 >
                   <SteamHistory info={formattedSteamInfo} />
                   <GenreStats infos={formattedGenreInfo} />
+                  <TopGames info={formattedTopGamesInfo} />
                 </motion.div>
               </div>
             )}
