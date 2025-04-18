@@ -83,16 +83,18 @@ async def fetch_game_genres(session, game):
     appid = game["appid"]
     print("mandando 1 request 6")
     game_details_url = f"https://store.steampowered.com/api/appdetails?appids={appid}&l=en&cc=BR"
+
+
     try:
         async with session.get(game_details_url, headers=headers) as resp:
+
             print(f"Status da resposta: {resp.status}")
             print(f"Content-Type: {resp.headers.get('Content-Type')}")
             text_data = await resp.text()
             print("Texto da resposta:", text_data[:300])  # só os 300 primeiros chars pra não lotar o terminal
 
-            # Tenta parsear como JSON depois
             data = json.loads(text_data)
-            # data = await resp.json()
+
 
         if resp.status != 200:
             print('vai tentar dnv')
@@ -100,7 +102,7 @@ async def fetch_game_genres(session, game):
             if data == None:
                 return {
                     "categories": "",
-                    "genres": ""
+                    "genres": "",
                 }
             print("Erro ao chamar API da Steam:", resp.status, resp.text)
 
@@ -114,25 +116,31 @@ async def fetch_game_genres(session, game):
         game_genres = [gen["description"] for gen in raw_genres]
         return {
             "categories": game_categories[0:6],
-            "genres": game_genres[0:6]
+            "genres": game_genres[0:6],
         }
     except Exception:
         return {
             "categories": "",
-            "genres": ""
+            "genres": "",
         }
     
 
     
 # Define a função async pra buscar conquistas
 async def fetch_details(session, game, steam_id, most_played_games):
-    await asyncio.sleep(1.5)
+
     appid = game["appid"]
+
     game_name = game.get("name", "Jogo Desconhecido")
+
+    game_image = game.get("img_icon_url", "")
+
     achievements_url = (
         f"https://api.steampowered.com/ISteamUserStats/GetPlayerAchievements/v1/"
         f"?appid={appid}&key={STEAM_API_KEY}&steamid={steam_id}"
     )
+
+    image_url = f'https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/apps/{appid}/{game_image}.jpg'
 
     if game in most_played_games:
         try:
@@ -153,9 +161,12 @@ async def fetch_details(session, game, steam_id, most_played_games):
                 total_achievements = len(conquered) + len(not_conquered)
 
 
+
                 if int(game.get("playtime_forever")) <= 120:
                     return {
                         "game": game_name,
+                        "image": image_url,
+                        "appid": appid,
                         "progress_achievements": 0,
                         "time_played": 0,
                         "categories": [],
@@ -166,6 +177,8 @@ async def fetch_details(session, game, steam_id, most_played_games):
 
                 return {
                     "game": game_name,
+                    "image": image_url,
+                    "appid": appid,
                     "total_achieved": total_achievements,
                     "progress_achievements": round((len(conquered) / total_achievements) * 100),
                     "time_played": round(int(game["playtime_forever"]) / 60),
@@ -176,6 +189,8 @@ async def fetch_details(session, game, steam_id, most_played_games):
         except Exception:
             return {
                 "game": game_name,
+                "image": image_url,
+                "appid": appid,
                 "total_achieved": 0,
                 "progress_achievements": 0,
                 "time_played": round(int(game["playtime_forever"]) / 60),
@@ -187,6 +202,8 @@ async def fetch_details(session, game, steam_id, most_played_games):
             game_details = await fetch_game_genres(session, game)
             return {
                 "game": game_name,
+                "image": image_url,
+                "appid": appid,
                 "total_achieved": 0,
                 "progress_achievements": 0,
                 "time_played": round(int(game["playtime_forever"]) / 60),
@@ -196,6 +213,8 @@ async def fetch_details(session, game, steam_id, most_played_games):
         else:
             return {
                 "game": game_name,
+                "image": image_url,
+                "appid": appid,
                 "total_achieved": 0,
                 "progress_achievements": 0,
                 "time_played": round(int(game["playtime_forever"]) / 60),
@@ -227,7 +246,7 @@ async def fetch_user_profile(session, steam_id):
     except Exception as e:
         print(f"Erro ao buscar dados do perfil da Steam: {str(e)}")
         return {"erro": f"Erro ao buscar dados do perfil da Steam: {str(e)}"}
-
+    
 class SteamAnalyzerViewSet(ViewSet):
 
     @action(detail=False, methods=["get"])
@@ -323,7 +342,9 @@ class SteamAnalyzerViewSet(ViewSet):
         shorter_games_data = []
         for game_data in games_data:
             shorter_games_data.append({
-            "game": game_data.get("game", "Unknown"), 
+            "game": game_data.get("game", "Unknown"),
+            "image": game_data.get("image", " unknown"),
+            "appid": game_data.get("appid", 0),
             "total_achieved": game_data.get("total_achieved", 0),
             "progress_achievements": game_data.get("progress_achievements", []),
             "time_played": game_data.get("time_played", 0),
