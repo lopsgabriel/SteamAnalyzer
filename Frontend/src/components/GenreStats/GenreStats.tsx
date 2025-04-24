@@ -1,6 +1,7 @@
 import { FC, useEffect, useState } from "react";
 import ApexCharts, { ApexOptions } from "apexcharts";
 import axios from "axios";
+import MotionDiv from "../MotionDiv/MotionDiv";
 interface GenreStatsProps {
   infos: {
     Username: string;
@@ -15,25 +16,22 @@ const GenreStats: FC<GenreStatsProps> = ({ infos }) => {
   const [AIMessage, setAIMessage] = useState('');
   const geminiKey = 'AIzaSyDr7m5RBBPpjJHCILFXx2DVu5deQr-HW4s'
     const prompt = `
-    Analise os hábitos de jogo de um usuário com base nesses dados da Steam e gere uma mensagem sarcástica, humilhe o jogador e debochando do jogador, não tenha pena:
-  
-    - Usuario: ${infos.Username}
+    Analise os hábitos de jogo de um usuário com base nesses dados da Steam e gere uma mensagem sarcástica,
+     humilhe o jogador e deboche do jogador, não tenha pena, fale como alguem jovem, use memes e girias:
+
+    - Nome: ${infos.Username}
     - Total de jogos: ${infos.totalGames}
     - Tempo jogado em cada genero: ${infos.totalTimePlayedPerGenre.map((g) => `${g.genre}: ${g.time.toFixed(2)}h`).join(', ')}
     - Top 5 jogos mais jogados: ${infos.Top5MostPlayedGames.map((g) => `${g.name}: ${g.hours.toFixed(2)}h`).join(', ')}
  
   
-    Seja debochado, sarcástico, e ligeiramente crítico com o jogador, pode brincar com as informações, seja curta, n é necessario comentar sobre todos os generos, mas faça o usuario dar uma risada ao ler sua resposta, comente pouco sobre os jogos, mas foque mais nos generos, comece a resposta com dizendo ao usuario que tipo de player ele é, seja curta e faça uma resposa pequena, maximo de 500 caracteres.
+    Seja engraçado, debochado, sarcástico, e ligeiramente crítico com o jogador, pode brincar com as informações, n é necessario comentar sobre todos os generos, mas faça o usuario dar uma risada ao ler sua resposta, fale menos dosjogos, e mais nos generos, comece a resposta com dizendo ao usuario que tipo de player ele é, seja curta e faça uma resposa pequena, maximo de 500 caracteres, não use hashtags, inicie com "{nome do jogador}, o {tipo de jogador que ele é}".
     `;
 
 
   useEffect(() => {
-    // const total = infos.totalTimePlayed;
     const genres = infos.totalTimePlayedPerGenre.map((g) => g.genre);
-    // const percentages = infos.totalTimePlayedPerGenre.map((g) =>
-    //   total ? Math.round((g.time / total) * 100) : 0
-    // );
-    const percentages2 = infos.totalTimePlayedPerGenre.map((g) =>
+    const percentages = infos.totalTimePlayedPerGenre.map((g) =>
     g.time)
 
     const fetchData = async () => {
@@ -47,7 +45,7 @@ const GenreStats: FC<GenreStatsProps> = ({ infos }) => {
     if (!el) return;
 
     const chartConfig: ApexOptions = {
-      series: percentages2,
+      series: percentages,
       chart: {
         type: "pie",
         width: 420,
@@ -57,7 +55,7 @@ const GenreStats: FC<GenreStatsProps> = ({ infos }) => {
         },
       },
       title: {
-        text: 'Horas por genero de jogo',
+        text: '',
         align: "center",
         style: {
           fontSize: "16px",
@@ -70,7 +68,8 @@ const GenreStats: FC<GenreStatsProps> = ({ infos }) => {
       dataLabels: {
         enabled: true,
         formatter: function (_val, opts) {
-          return opts.w.globals.series[opts.seriesIndex];
+          const value = opts.w.globals.series[opts.seriesIndex];
+          return `${value.toLocaleString('pt-BR')} h`;
         },
         style: {
           fontSize: "12px",
@@ -120,7 +119,6 @@ const GenreStats: FC<GenreStatsProps> = ({ infos }) => {
     );
     chart.render();
 
-    // Limpeza pra não ficar duplicando
     return () => {
       chart.destroy();
     };
@@ -151,26 +149,29 @@ const GenreStats: FC<GenreStatsProps> = ({ infos }) => {
   }
 
   return (
-    <div>
-      <div className="bg-zinc-900 text-white p-6 rounded-2xl border-b-4 hover:shadow-zinc-950 mt-20 duration-300 border-amber-500 shadow-lg flex flex-col items-center gap-3 w-full max-w-2xl mx-auto">
-      {/* Header */}
-        <div className="relative mx-4 mt-4 flex flex-col items-center justify-center gap-4 overflow-hidden rounded-none bg-transparent bg-clip-border text-white shadow-none md:flex-row md:items-center">
-          <div className="flex items-center justify-center">
-            <h6 className="text-2xl font-bold  hover:text-amber-400 transition-colors">
-              Gêneros em Destaque
-            </h6>
+    <MotionDiv>
+      <div>
+        <div className="bg-zinc-900 text-white p-6 rounded-2xl border-b-4 hover:shadow-zinc-950 mt-20 duration-300 border-amber-500 shadow-lg flex flex-col items-center gap-3 w-full max-w-2xl mx-auto">
+          
+        {/* Header */}
+          <div className="relative mx-4 mt-4 flex flex-col items-center justify-center gap-4 overflow-hidden rounded-none bg-transparent bg-clip-border text-white shadow-none md:flex-row md:items-center">
+            <div className="flex items-center justify-center">
+              <h6 className="text-2xl font-bold  hover:text-amber-400 transition-colors">
+                Gêneros em Destaque
+              </h6>
+            </div>
+          </div>
+
+        {/* Pie Chart and Message */}
+          <div className="py-6 mt-4 grid place-items-center px-2">
+            <div id="pie-chart"></div>
+            <p className="mt-4 italic text-center text-gray-300 border-t border-gray-700 pt-4 px-4 duration-300">
+              {AIMessage || "Carregando..."}
+            </p>
           </div>
         </div>
-
-      {/* Pie Chart and Message */}
-      <div className="py-6 mt-4 grid place-items-center px-2">
-        <div id="pie-chart"></div>
-        <p className="mt-4 italic text-center text-gray-300 border-t border-gray-700 pt-4 px-4 duration-300">
-          {AIMessage || "Carregando..."}
-        </p>
       </div>
-    </div>
-  </div>
+    </MotionDiv>
   );
 };
 

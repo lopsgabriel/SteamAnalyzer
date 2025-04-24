@@ -1,14 +1,14 @@
 import { motion } from 'framer-motion'
-import { Winner } from '../TopGames'
+import { GameProps } from '../TopGames'
 import { positions } from './constants'
 
 interface Props {
-  readonly podium: Winner[]
-  readonly winner: Winner
+  readonly podium: GameProps[]
+  readonly Game: GameProps
   readonly index: number
 }
 
-export default function PodiumStep({ podium, winner, index }: Props) {
+export default function PodiumStep({ podium, Game, index }: Props) {
   return (
     <div className="flex flex-col place-content-center">
       <motion.div
@@ -19,7 +19,7 @@ export default function PodiumStep({ podium, winner, index }: Props) {
           visible: () => ({
             opacity: 1,
             transition: {
-              delay: 1 + (podium.length - winner.place + 2),
+              delay: 1 + (podium.length - Game.place + 2),
               duration: 0.50
             }
           }),
@@ -28,7 +28,7 @@ export default function PodiumStep({ podium, winner, index }: Props) {
         className="mb-1 self-center"
       >
         <img
-          src={winner.avatar}
+          src={Game.avatar}
           alt=""
           className="rounded-full border border-black shadow-sm w-13 h-13 hover:scale-110 hover:shadow-md duration-300 ease-in-out" 
         />
@@ -39,26 +39,26 @@ export default function PodiumStep({ podium, winner, index }: Props) {
         animate="visible"
         variants={{
           visible: () => ({
-            height: 200 * ((podium.length - winner.place) / podium.length),
+            height: 200 * ((podium.length - Game.place) / podium.length),
             opacity: 2,
             transition: {
-              delay: 1 + (podium.length - winner.place),
+              delay: 1 + (podium.length - Game.place),
               duration: 1.5,
               ease: 'backInOut'
             }
           }),
           hidden: { opacity: 0, height: 0 }
         }}
-        className="bg-amber-500 flex w-16 border-black border border-b-0 rounded-t-lg shadow-lg place-content-center hover:border-amber-900 hover:bg-amber-400 cursor-pointer"
+        className="bg-zinc-700 flex w-16 border-black border border-b-0 rounded-t-lg shadow-lg place-content-center hover:bg-amber-500 hover:bg-opacity-85 cursor-pointer duration-300 ease-in-out"
         style={{
           marginBottom: -1,
           filter: `opacity(${
-            0.1 + (podium.length - winner.place) / podium.length
+            0.1 + (podium.length - Game.place) / podium.length
           })`
         }}
       >
         <span className="self-end text-white font-semibold">
-          {positions[winner.place]}
+          {positions[Game.place]}
         </span>
       </motion.div>
     </div>

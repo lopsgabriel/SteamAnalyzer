@@ -1,11 +1,9 @@
 import { FC, useState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSteam } from '@fortawesome/free-brands-svg-icons'
-import { Typewriter, SteamHistory, GenreStats, TopGames } from "@/components";
+import { Typewriter, SteamHistory, GenreStats, TopGames, MotionDiv } from "@/components";
 import axios from "axios";
 import { faCircleQuestion } from '@fortawesome/free-solid-svg-icons'
-import { motion } from 'framer-motion';
-import { useInView } from 'react-intersection-observer';
 
 // Componentes: SteamHistory, GenreStats, CategoryStats, TopGames, FinalAnalysis
 
@@ -60,11 +58,6 @@ const Home: FC = () => {
     totalGames: steamData.info["total games"],
     top5games: steamData.games.slice(0, 5)
   } : null;
-
-  const { ref: inViewRef, inView } = useInView({
-    triggerOnce: true, // Só anima na primeira vez que entrar na tela
-    threshold: 0.2     // Só considera "visível" quando 20% do bloco aparece
-  });
 
   return (
     <>
@@ -137,17 +130,11 @@ const Home: FC = () => {
             </div>
             {formattedSteamInfo && formattedGenreInfo && formattedTopGamesInfo && (
               <div ref={analysisRef} className="w-full items-center justify-center flex-col flex">
-                <motion.div
-                  ref={inViewRef} // Aqui é onde conectamos o observer
-                  className="w-full"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-                  transition={{ duration: 0.6, ease: 'easeOut' }}
-                >
+                <MotionDiv>
                   <SteamHistory info={formattedSteamInfo} />
-                  <GenreStats infos={formattedGenreInfo} />
                   <TopGames info={formattedTopGamesInfo} />
-                </motion.div>
+                  <GenreStats infos={formattedGenreInfo} />
+                </MotionDiv>
               </div>
             )}
           </div>

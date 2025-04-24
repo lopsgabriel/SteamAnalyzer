@@ -18,20 +18,21 @@ interface SteamHistoryProps {
 }
 
 const SteamHistory: FC<SteamHistoryProps> = ({ info }) => {
-  const { Username, ProfileURL, AvatarURL, DateJoined, DaysOnSteam, totalGames, totalTimePlayed } = info;
+  const { Username, ProfileURL, AvatarURL, DaysOnSteam, totalGames, totalTimePlayed } = info;
   const [AIMessage, setAIMessage] = useState('');
   const yearsOnSteam = (Number(DaysOnSteam) / 365).toFixed(1); 
   const geminiKey = 'AIzaSyDr7m5RBBPpjJHCILFXx2DVu5deQr-HW4s'
 
   const prompt = `
-  Analise os hábitos de jogo de um usuário com base nesses dados da Steam e gere uma mensagem sarcástica, humilhe o jogador e debochando do jogador, não tenha pena:
+  Analise os hábitos de jogo de um usuário com base nesses dados da Steam e gere uma mensagem sarcástica,
+   humilhe o jogador e deboche do jogador, não tenha pena, fale como alguem jovem, use memes e girias:
 
   - Nome: ${info.Username}
   - Total de horas jogadas: ${info.totalTimePlayed.toFixed(2)}h
   - Conta criada em: ${info.DateJoined} (${info.DaysOnSteam} dias na Steam)
   - Total de jogos: ${info.totalGames}
 
-  Seja debochado, sarcástico, e ligeiramente crítico com o jogador, pode humilhar mesmoo, seja direta e curta.
+  Seja debochado, sarcástico, e ligeiramente crítico com o jogador, pode humilhar mesmoo, seja direta e curta, maximo de 500 caracteres.
   `;
 
   useEffect(() => {
@@ -94,7 +95,7 @@ const SteamHistory: FC<SteamHistoryProps> = ({ info }) => {
         </div>
         <div className="bg-zinc-800 p-3 rounded-xl flex flex-col justify-center items-center hover:scale-110 duration-300">
           <Clock size={20} className="text-gray-500 mb-1" />    
-          <p className="text-amber-400 font-bold">{totalTimePlayed}</p>
+          <p className="text-amber-400 font-bold">{totalTimePlayed.toFixed(0)}</p>
           <p className="text-gray-400">Horas </p>
         </div>
       </div>
