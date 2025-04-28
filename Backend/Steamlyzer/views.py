@@ -10,6 +10,7 @@ import requests
 import re
 import time
 import json
+from setup.utils.player_type_logic import define_player_type
 
 
 semaphore = asyncio.Semaphore(5)
@@ -31,7 +32,7 @@ def make_request_with_retry(url):
         if response.status_code == 200:
             return response.json()
         time.sleep(delay)
-        delay *= 2  # Exponencia o tempo de espera
+        delay *= 2 
     return None
 
 def resolve_vanity_url(custom_url):
@@ -168,7 +169,7 @@ async def fetch_details(session, game, steam_id, most_played_games):
                         "image": image_url,
                         "appid": appid,
                         "progress_achievements": 0,
-                        "time_played": 0,
+                        "hours": 0,
                         "categories": [],
                         "genres": []
                     }      
@@ -181,7 +182,7 @@ async def fetch_details(session, game, steam_id, most_played_games):
                     "appid": appid,
                     "total_achieved": total_achievements,
                     "progress_achievements": round((len(conquered) / total_achievements) * 100),
-                    "time_played": round(int(game["playtime_forever"]) / 60),
+                    "hours": round(int(game["playtime_forever"]) / 60),
                     "categories": game_details["categories"],
                     "genres": game_details["genres"]
                 }
@@ -193,7 +194,7 @@ async def fetch_details(session, game, steam_id, most_played_games):
                 "appid": appid,
                 "total_achieved": 0,
                 "progress_achievements": 0,
-                "time_played": round(int(game["playtime_forever"]) / 60),
+                "hours": round(int(game["playtime_forever"]) / 60),
                 "categories": game_details["categories"],
                 "genres": game_details["genres"]
             }
@@ -206,7 +207,7 @@ async def fetch_details(session, game, steam_id, most_played_games):
                 "appid": appid,
                 "total_achieved": 0,
                 "progress_achievements": 0,
-                "time_played": round(int(game["playtime_forever"]) / 60),
+                "hours": round(int(game["playtime_forever"]) / 60),
                 "categories": game_details["categories"],
                 "genres": game_details["genres"]
             }
@@ -217,7 +218,7 @@ async def fetch_details(session, game, steam_id, most_played_games):
                 "appid": appid,
                 "total_achieved": 0,
                 "progress_achievements": 0,
-                "time_played": round(int(game["playtime_forever"]) / 60),
+                "hours": round(int(game["playtime_forever"]) / 60),
                 "categories": [],
                 "genres": []
             }
@@ -347,28 +348,30 @@ class SteamAnalyzerViewSet(ViewSet):
             "appid": game_data.get("appid", 0),
             "total_achieved": game_data.get("total_achieved", 0),
             "progress_achievements": game_data.get("progress_achievements", []),
-            "time_played": game_data.get("time_played", 0),
+            "hours": game_data.get("hours", 0),
         })
             
-        even_shorter_games_data = (game for game in shorter_games_data if game["time_played"] > 0) 
+        even_shorter_games_data = (game for game in shorter_games_data if game["hours"] > 0) 
         even_shorter_games_data = list(even_shorter_games_data)
-        even_shorter_games_data.sort(key=lambda game: game["time_played"], reverse=True)
-        top_5_games = [{
-            'name': game["game"],
-            "hours": game["time_played"],
-        } for game in even_shorter_games_data[:5]]
+        even_shorter_games_data.sort(key=lambda game: game["hours"], reverse=True)
+        top_5_games = even_shorter_games_data[:5]
 
+        print(f'GAMES DATAAAA {games_data}')
         for game in games_data:
             for genre in game["genres"]:
                 if genre in genres_hours:
-                    genres_hours[genre] += game["time_played"]
+                    genres_hours[genre] += game["hours"]
                 else:
-                    genres_hours[genre] = game["time_played"]
+                    genres_hours[genre] = game["hours"]
             for category in game["categories"]: 
                 if category in categories_hours:
-                    categories_hours[category] += game["time_played"]
+                    categories_hours[category] += game["hours"]
                 else:
-                    categories_hours[category] = game["time_played"]
+                    categories_hours[category] = game["hours"]
+
+        genres_hours = dict(sorted(genres_hours.items(), key=lambda item: item[1], reverse=True)[:6])
+        categories_hours = dict(sorted(categories_hours.items(), key=lambda item: item[1], reverse=True)[:6])
+        player_type = define_player_type(genres_hours, categories_hours)
         
         result = {
             "info": {
@@ -380,13 +383,12 @@ class SteamAnalyzerViewSet(ViewSet):
                 "Days on Steam": days_since_creation,
                 "Visibility State": user_data.get("communityvisibilitystate", ""),
                 "total games": len(games),
-                "total time played": sum(int(game["playtime_forever"]) for game in games if isinstance(game, dict) and "playtime_forever" in game) / 60,
-                "total time played per genre": dict(sorted(genres_hours.items(), key=lambda item: item[1], reverse=True)[:6]),
-                "total time played per category": dict(sorted(categories_hours.items(), key=lambda item: item[1], reverse=True)[:6]),
-                # top 5 jogos informando apenas o nome e a quantidade de horas jogadas
+                "total time played":  round((sum(int(game["playtime_forever"]) for game in games if isinstance(game, dict) and "playtime_forever" in game) / 60), 2),
+                "total time played per genre": genres_hours,
+                "total time played per category": categories_hours,
+                "player type": player_type,
                 "top 5 games": top_5_games
                 
-            },
-            "games": even_shorter_games_data,
+            }
         }
         return Response(result)
