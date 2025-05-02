@@ -8,7 +8,10 @@ interface GenreStatsProps {
     totalTimePlayed: number;
     totalTimePlayedPerGenre: Array<{ genre: string; time: number }>;
     totalGames: number;
-    Top5MostPlayedGames: Array<{ name: string; hours: number }>;
+    shorterTop5Games: Array<{ 
+      name: string;
+      hours: number;
+       }>;
   };
 }
 
@@ -22,7 +25,7 @@ const GenreStats: FC<GenreStatsProps> = ({ infos }) => {
     - Nome: ${infos.Username}
     - Total de jogos: ${infos.totalGames}
     - Tempo jogado em cada genero: ${infos.totalTimePlayedPerGenre.map((g) => `${g.genre}: ${g.time.toFixed(2)}h`).join(', ')}
-    - Top 5 jogos mais jogados: ${infos.Top5MostPlayedGames.map((g) => `${g.name}: ${g.hours.toFixed(2)}h`).join(', ')}
+    - Top 5 jogos mais jogados: ${infos.shorterTop5Games.map((g) => `${g.name}: ${g.hours.toFixed(2)}h`).join(', ')}
  
   
     Seja engraçado, debochado, sarcástico, e ligeiramente crítico com o jogador, pode brincar com as informações, n é necessario comentar sobre todos os generos, mas faça o usuario dar uma risada ao ler sua resposta, fale menos dosjogos, e mais nos generos, comece a resposta com dizendo ao usuario que tipo de player ele é, seja curta e faça uma resposa pequena, maximo de 500 caracteres, não use hashtags, inicie com "{nome do jogador}, o {tipo de jogador que ele é}".

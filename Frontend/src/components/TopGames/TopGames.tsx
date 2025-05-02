@@ -12,7 +12,7 @@ interface game {
   image: string
   appid: number
   progress_achievements: number
-  time_played: number
+  hours: number
   total_achieved: number
 }
 
@@ -39,7 +39,7 @@ const TopGames: FC<TopGamesProps> = ({info}) => {
     name: game.game,
     avatar: game.image,
     rank: index + 1,
-    hours: game.time_played 
+    hours: game.hours 
   }))
   const geminiKey = 'AIzaSyDr7m5RBBPpjJHCILFXx2DVu5deQr-HW4s'
    const [AIMessage, setAIMessage] = useState('');
@@ -49,7 +49,7 @@ const TopGames: FC<TopGamesProps> = ({info}) => {
    humilhe o jogador e deboche do jogador, não tenha pena, fale como alguem jovem, use memes e girias:
 
   - Nome: ${info.Username}
-  - Top 5 jogos mais jogados: ${info.top5games.map((g) => `${g.game}: ${g.time_played.toFixed(2)}h`).join(', ')}
+  - Top 5 jogos mais jogados: ${info.top5games.map((g) => `${g.game}: ${g.hours.toFixed(2)}h`).join(', ')}
 
 
   Seja debochado, sarcástico, e ligeiramente crítico com o jogador, pode humilhar mesmoo, seja direta e curta, maximo de 500 caracteres, não use hashtags, não comente o nome do jogador, maximo de 500 caracteres

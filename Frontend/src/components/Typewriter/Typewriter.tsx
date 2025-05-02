@@ -6,7 +6,7 @@ const Typewriter: FC = () => {
   const [index, setIndex] = useState(0); // qual palavra
   const [subIndex, setSubIndex] = useState(0); // posição da letra
   const [deleting, setDeleting] = useState(false);
-  const [speed, setSpeed] = useState(100);
+  const [speed] = useState(100);
 
   useEffect(() => {
     if (index >= words.length) {
@@ -33,7 +33,7 @@ const Typewriter: FC = () => {
 
   return (
     <div className="w-full flex justify-center items-center h-32">
-      <h1 className="text-4xl font-bold font-sora">{text}<span className="animate-pulse">|</span></h1>
+      <h1 className="text-4xl font-bold font-sora text-zinc-200">{text}<span className="animate-pulse">|</span></h1>
     </div>
   );
 };

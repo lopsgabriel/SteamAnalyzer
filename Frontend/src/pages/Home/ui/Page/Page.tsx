@@ -1,7 +1,7 @@
 import { FC, useState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSteam } from '@fortawesome/free-brands-svg-icons'
-import { Typewriter, SteamHistory, GenreStats, TopGames, MotionDiv } from "@/components";
+import { Typewriter, SteamHistory, GenreStats, TopGames, MotionDiv, CategoryStats } from "@/components";
 import axios from "axios";
 import { faCircleQuestion } from '@fortawesome/free-solid-svg-icons'
 
@@ -14,10 +14,8 @@ const Home: FC = () => {
   useEffect(() => {
     if (steamData && analysisRef.current) {
       analysisRef.current.scrollIntoView({ behavior: "smooth" });
-      console.log("Steam Data:", steamData)
     }
     if (formattedGenreInfo){
-      console.log(`genre info:`, formattedGenreInfo)
     }
   }, [steamData]);
 
@@ -25,7 +23,6 @@ const Home: FC = () => {
     try {
       const response = await axios.get(`http://127.0.0.1:8000/steam/analyze/?steam_id=${steamID}`);
       setSteamData(response.data);
-      console.log("Steam Data:", steamData)
     } catch (error) {
       console.error(error);
     }
@@ -42,6 +39,14 @@ const Home: FC = () => {
     totalTimePlayed: steamData.info["total time played"]
   } : null;
 
+  const top5games = steamData ? steamData.info["top 5 games"] : null
+  const simplifiedGames = top5games
+  ? top5games.map((game: any) => ({
+      name: game.game,
+      hours: game.hours
+    }))
+  : null;
+
   const formattedGenreInfo = steamData ? {
     Username: steamData.info["Username"],
     totalTimePlayed: steamData.info["total time played"],
@@ -50,14 +55,22 @@ const Home: FC = () => {
       time: Number(time),
     })),
     totalGames: steamData.info["total games"],
-    Top5MostPlayedGames: steamData.info["top 5 games"]
+    shorterTop5Games: simplifiedGames
   } : null;
 
   const formattedTopGamesInfo = steamData ? {
     Username: steamData.info["Username"],
     totalGames: steamData.info["total games"],
-    top5games: steamData.games.slice(0, 5)
+    top5games: steamData.info["top 5 games"]
   } : null;
+
+  const formattedCategoryInfo = steamData ? {
+    Username: steamData.info["Username"],
+    ChartData: Object.entries(steamData.info["total time played per category"]).map(
+      ([name, hours]) => ({ name, hours: Number(hours) })
+    )
+  } : null;
+
 
   return (
     <>
@@ -82,7 +95,7 @@ const Home: FC = () => {
                     Analisar Perfil
                   </button>
                 </form>
-                <FontAwesomeIcon className="absolute left-2.5 top-3.5" icon={faSteam} />
+                <FontAwesomeIcon className="absolute left-2.5 top-3.5 text-zinc-300" icon={faSteam} />
                 <div className="flex flex-col pt-4 pl-4">
                   <p className="text-slate-400 font-sora">Voce pode usar:</p>
                   <div className="flex gap-6 pt-1">
@@ -128,12 +141,13 @@ const Home: FC = () => {
                 </div>
               </div>
             </div>
-            {formattedSteamInfo && formattedGenreInfo && formattedTopGamesInfo && (
+            {formattedSteamInfo && formattedGenreInfo && formattedTopGamesInfo && formattedCategoryInfo && (
               <div ref={analysisRef} className="w-full items-center justify-center flex-col flex">
                 <MotionDiv>
                   <SteamHistory info={formattedSteamInfo} />
                   <TopGames info={formattedTopGamesInfo} />
                   <GenreStats infos={formattedGenreInfo} />
+                  <CategoryStats infos={formattedCategoryInfo} />
                 </MotionDiv>
               </div>
             )}

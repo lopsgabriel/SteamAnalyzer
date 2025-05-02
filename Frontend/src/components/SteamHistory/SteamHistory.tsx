@@ -99,7 +99,7 @@ const SteamHistory: FC<SteamHistoryProps> = ({ info }) => {
           <p className="text-gray-400">Horas </p>
         </div>
       </div>
-      <p className="mt-4 italic text-center text-gray-300 border-t border-gray-700 pt-4 px-4 duration-300">
+      <p className="mt-4 mx-8 italic text-center text-gray-300 border-t border-gray-700 pt-4 px-4 whitespace-pre-wrap break-words max-h-48 overflow-y-auto">
         {AIMessage || "Carregando..."}
       </p>
     </div>

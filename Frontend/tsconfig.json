@@ -30,7 +30,9 @@
       "widgets/*": ["src/widgets/*"],
       "pages/*": ["src/pages/*"],
       "processes/*": ["src/processes/*"],
-      "app/*": ["src/app/*"]
+      "app/*": ["src/app/*"],
+      "@/components/*": ["components/*"],
+      "@/lib/*": ["lib/*"]
     }
   },
   "include": ["src", "types/vite-env.d.ts"],
