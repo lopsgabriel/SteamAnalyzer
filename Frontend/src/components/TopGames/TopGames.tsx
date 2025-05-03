@@ -45,14 +45,13 @@ const TopGames: FC<TopGamesProps> = ({info}) => {
    const [AIMessage, setAIMessage] = useState('');
 
    const prompt = `
-  Analise os hábitos de jogo de um usuário com base nesses dados da Steam e gere uma mensagem sarcástica,
-   humilhe o jogador e deboche do jogador, não tenha pena, fale como alguem jovem, use memes e girias:
+  Analise os hábitos de jogo de um usuário com base nesses dados da Steam e gere uma mensagem sarcástica, fale como alguem jovem, use memes e girias:
 
   - Nome: ${info.Username}
   - Top 5 jogos mais jogados: ${info.top5games.map((g) => `${g.game}: ${g.hours.toFixed(2)}h`).join(', ')}
 
 
-  Seja debochado, sarcástico, e ligeiramente crítico com o jogador, pode humilhar mesmoo, seja direta e curta, maximo de 500 caracteres, não use hashtags, não comente o nome do jogador, maximo de 500 caracteres
+  Seja engraçado, e ligeiramente crítico com o jogador, coloque enfase nos jogos mais jogados, seja direta e curta, maximo de 250 caracteres, não use hashtags, não comente o nome do jogador, maximo de 250 caracteres, não use palavrões, não cumprimente, aja como se já estivesse no meio de uma conversa, e seja direto sem cumprimentos, não use hashtags
   `;
 
   useEffect(() => {
@@ -92,12 +91,12 @@ const TopGames: FC<TopGamesProps> = ({info}) => {
     .map((GameProps, place) => ({ ...GameProps, place }))
 
   return(
-    <MotionDiv>
-      <LayoutShell AIMessage={AIMessage}>
-        <Podium Games={Games} />
-        <GamesList Games={Games} />
+    <LayoutShell AIMessage={AIMessage}>
+        <MotionDiv>
+          <Podium Games={Games} />
+          <GamesList Games={Games} />
+        </MotionDiv>
       </LayoutShell>
-    </MotionDiv>
   )
 }
 

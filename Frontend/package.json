@@ -36,6 +36,7 @@
     "@types/axios": "^0.14.4",
     "@types/react": "^19.1.1",
     "@types/react-dom": "^19.1.2",
+    "@types/react-icons": "^3.0.0",
     "@types/recharts": "^2.0.1",
     "@typescript-eslint/eslint-plugin": "^8.29.1",
     "@typescript-eslint/parser": "^8.29.1",

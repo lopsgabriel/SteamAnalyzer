@@ -61,7 +61,7 @@ export function ChartSection( { chartData }: ChartSectionProps ) {
                 chartData.map((entry, index) => (
                   <Cell
                     key={`cell-${index}`}
-                    fill={activeIndex === index ? "#f59e0b" : "#3f3f46"}
+                    fill={activeIndex === index ? "#f59e0b" : "#27272a"}
                     style={{
                       transition: "all 0.3s ease",
                       transform: activeIndex === index ? "scalex(1.02)" : "scalex(1)",
@@ -82,7 +82,7 @@ export function ChartSection( { chartData }: ChartSectionProps ) {
               <LabelList
                 dataKey="hours"
                 position="right"
-                className="fill-white"
+                className="fill-amber-400"
                 fontSize={14}
                 fontWeight={700}
                 formatter={(value: number) => `${value} h`}

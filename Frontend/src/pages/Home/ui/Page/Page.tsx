@@ -80,22 +80,24 @@ const Home: FC = () => {
             <div className="pt-8 w-full items-center justify-center flex-col flex">
               <Typewriter />
               <div className="relative mt-16 w-[600px]">
+                <p className="text-xs text-zinc-500 mb-3 pl-4">Certifique-se que seu perfil na Steam esteja público.</p>
               <form onSubmit={(e) => { e.preventDefault(); fetchUserData((e.currentTarget[0] as HTMLInputElement).value) }} className="flex flex-col items-center">
                   <input
+                    spellCheck="false"
                     type="text"
                     className="peer w-full bg-transparent pl-10 text-slate-300 text-xl border border-slate-200 rounded-2xl px-3 py-2 transition-all duration-300 ease-in-out focus:outline-none hover:border-slate-500 shadow-sm focus:shadow"
                   />
-                  <label className="pointer-events-none absolute ml-5 cursor-text bg-base-200 px-1 left-2.5 top-3 text-slate-400 text-sm transition-all transform origin-left peer-focus:-top-2 peer-focus:left-2.5 peer-focus:text-xs peer-focus:text-slate-400 peer-focus:scale-90">
+                  <label className="pointer-events-none absolute ml-5 cursor-text bg-base-200 px-1 left-2.5 top-10 text-slate-400 text-sm transition-all transform origin-left peer-focus:top-5 peer-focus:left-2.5 peer-focus:text-xs peer-focus:text-slate-400 peer-focus:scale-90">
                   Perfil Steam
                   </label>
                   <button
                     type="submit"
-                    className="mt-4 bg-amber-500 text-black px-4 py-2 rounded-xl font-semibold transition-transform duration-300 hover:bg-amber-400 hover:scale-105 active:scale-95"
+                    className="mt-4 bg-amber-500 text-white px-4 py-2 rounded-xl font-medium transition-transform duration-300 hover:scale-105 active:scale-95"
                   >
                     Analisar Perfil
                   </button>
                 </form>
-                <FontAwesomeIcon className="absolute left-2.5 top-3.5 text-zinc-300" icon={faSteam} />
+                <FontAwesomeIcon className="absolute left-2.5 top-10 text-zinc-300" icon={faSteam} />
                 <div className="flex flex-col pt-4 pl-4">
                   <p className="text-slate-400 font-sora">Voce pode usar:</p>
                   <div className="flex gap-6 pt-1">

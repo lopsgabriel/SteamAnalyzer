@@ -1,4 +1,5 @@
 import { FC, useEffect, useState } from "react";
+import { RiInformationLine } from "react-icons/ri";
 import ApexCharts, { ApexOptions } from "apexcharts";
 import axios from "axios";
 import MotionDiv from "../MotionDiv/MotionDiv";
@@ -19,8 +20,7 @@ const GenreStats: FC<GenreStatsProps> = ({ infos }) => {
   const [AIMessage, setAIMessage] = useState('');
   const geminiKey = 'AIzaSyDr7m5RBBPpjJHCILFXx2DVu5deQr-HW4s'
     const prompt = `
-    Analise os hábitos de jogo de um usuário com base nesses dados da Steam e gere uma mensagem sarcástica,
-     humilhe o jogador e deboche do jogador, não tenha pena, fale como alguem jovem, use memes e girias:
+    Analise os hábitos de jogo de um usuário com base nesses dados da Steam e gere uma mensagem sarcástica, fale como alguem jovem, use memes e girias:
 
     - Nome: ${infos.Username}
     - Total de jogos: ${infos.totalGames}
@@ -28,7 +28,7 @@ const GenreStats: FC<GenreStatsProps> = ({ infos }) => {
     - Top 5 jogos mais jogados: ${infos.shorterTop5Games.map((g) => `${g.name}: ${g.hours.toFixed(2)}h`).join(', ')}
  
   
-    Seja engraçado, debochado, sarcástico, e ligeiramente crítico com o jogador, pode brincar com as informações, n é necessario comentar sobre todos os generos, mas faça o usuario dar uma risada ao ler sua resposta, fale menos dosjogos, e mais nos generos, comece a resposta com dizendo ao usuario que tipo de player ele é, seja curta e faça uma resposa pequena, maximo de 500 caracteres, não use hashtags, inicie com "{nome do jogador}, o {tipo de jogador que ele é}".
+    Seja engraçado, e ligeiramente crítico com o jogador, pode brincar com as informações, não é necessario comentar sobre todos os generos, mas faça o usuario dar uma risada ao ler sua resposta, fale menos dos jogos, e mais nos generos, seja curta e faça uma resposta pequena, maximo de 200 caracteres, não use hashtags, inicie com "{nome do jogador}, o {tipo de jogador que ele é}", maximo de 200 caracteres.
     `;
 
 
@@ -152,29 +152,35 @@ const GenreStats: FC<GenreStatsProps> = ({ infos }) => {
   }
 
   return (
-    <MotionDiv>
-      <div>
-        <div className="bg-zinc-900 text-white p-6 rounded-2xl border-b-4 hover:shadow-zinc-950 mt-20 duration-300 border-amber-500 shadow-lg flex flex-col items-center gap-3 w-full max-w-2xl mx-auto">
-          
-        {/* Header */}
-          <div className="relative mx-4 mt-4 flex flex-col items-center justify-center gap-4 overflow-hidden rounded-none bg-transparent bg-clip-border text-white shadow-none md:flex-row md:items-center">
-            <div className="flex items-center justify-center">
-              <h6 className="text-2xl font-bold  hover:text-amber-400 transition-colors">
-                Gêneros em Destaque
-              </h6>
+    <div>
+        <div className="bg-zinc-900 text-white p-6 rounded-2xl border-b-4 hover:shadow-zinc-900 mt-20 duration-300 border-amber-500 shadow-lg flex flex-col items-center gap-3 w-full max-w-2xl mx-auto">
+          <MotionDiv>
+          {/* Header */}
+            <div className="relative mx-4 mt-4 flex flex-col items-center justify-center gap-4 overflow-hidden rounded-none bg-transparent bg-clip-border text-white shadow-none md:flex-row md:items-center">
+              <div className="flex items-center justify-center">
+                <h6 className="text-2xl font-bold  hover:text-amber-400 transition-colors">
+                  Gêneros em Destaque
+                </h6>
+              </div>
             </div>
-          </div>
 
-        {/* Pie Chart and Message */}
-          <div className="py-6 mt-4 grid place-items-center px-2">
-            <div id="pie-chart"></div>
-            <p className="mt-4 italic text-center text-gray-300 border-t border-gray-700 pt-4 px-4 duration-300">
-              {AIMessage || "Carregando..."}
-            </p>
-          </div>
+          {/* Pie Chart and Message */}
+            <div className="py-6 mt-4 grid place-items-center px-2">
+              <div id="pie-chart"></div>
+              <p className="mt-4 italic text-center text-gray-300 border-t border-gray-700 hover:border-gray-500 pt-4 px-4 duration-300">
+                {AIMessage || "Carregando..."}
+              </p>
+
+              <div className="w-full flex pt-4 px-4 items-start">
+                <RiInformationLine className="w-4 h-4 text-gray-400 flex-none"/>
+                <p className=" mx-2 italic text-gray-400 text-sm hover:text-gray-300 duration-300">
+                  {`O gráfico mostra quais foram os generos mais jogados em horas. É possivel que um jogo tenha varios generos ao mesmo tempo.` }
+                </p>
+              </div>
+            </div>
+          </MotionDiv>
         </div>
       </div>
-    </MotionDiv>
   );
 };
 

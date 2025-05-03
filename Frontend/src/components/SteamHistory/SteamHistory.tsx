@@ -25,14 +25,14 @@ const SteamHistory: FC<SteamHistoryProps> = ({ info }) => {
 
   const prompt = `
   Analise os hábitos de jogo de um usuário com base nesses dados da Steam e gere uma mensagem sarcástica,
-   humilhe o jogador e deboche do jogador, não tenha pena, fale como alguem jovem, use memes e girias:
+   humilhe o jogador e deboche do jogador, não tenha pena, fale como alguem jovem:
 
   - Nome: ${info.Username}
   - Total de horas jogadas: ${info.totalTimePlayed.toFixed(2)}h
   - Conta criada em: ${info.DateJoined} (${info.DaysOnSteam} dias na Steam)
   - Total de jogos: ${info.totalGames}
 
-  Seja debochado, sarcástico, e ligeiramente crítico com o jogador, pode humilhar mesmoo, seja direta e curta, maximo de 500 caracteres.
+  Seja engraçado, sarcástico, e ligeiramente crítico com o jogador, pode humilhar mesmoo, seja direta e curta, não utilize hashtags, não usar #, maximo de 250 caracteres.
   `;
 
   useEffect(() => {
@@ -68,7 +68,7 @@ const SteamHistory: FC<SteamHistoryProps> = ({ info }) => {
   }
 
   return (
-    <div className="bg-zinc-900 text-white p-6 rounded-2xl border-b-4 hover:shadow-zinc-950 mt-10 duration-300 border-amber-500 shadow-lg flex flex-col items-center gap-3 w-full max-w-2xl mx-auto">
+    <div className="bg-zinc-900 text-white p-6 rounded-2xl border-b-4 hover:shadow-zinc-900 mt-10 duration-300 border-amber-500 shadow-lg flex flex-col items-center gap-3 w-full max-w-2xl mx-auto">
       <img
         src={AvatarURL}
         alt={`${Username}'s avatar`}
@@ -99,7 +99,7 @@ const SteamHistory: FC<SteamHistoryProps> = ({ info }) => {
           <p className="text-gray-400">Horas </p>
         </div>
       </div>
-      <p className="mt-4 mx-8 italic text-center text-gray-300 border-t border-gray-700 pt-4 px-4 whitespace-pre-wrap break-words max-h-48 overflow-y-auto">
+      <p className="mt-4 mx-4 italic text-center text-gray-300 border-t border-gray-700 hover:border-gray-500 duration-300 pt-4 px-4 whitespace-pre-wrap break-words max-h-48 overflow-y-auto">
         {AIMessage || "Carregando..."}
       </p>
     </div>
