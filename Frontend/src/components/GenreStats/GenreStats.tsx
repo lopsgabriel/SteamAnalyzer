@@ -20,16 +20,17 @@ const GenreStats: FC<GenreStatsProps> = ({ infos }) => {
   const [AIMessage, setAIMessage] = useState('');
   const geminiKey = 'AIzaSyDr7m5RBBPpjJHCILFXx2DVu5deQr-HW4s'
     const prompt = `
-    Analise os hábitos de jogo de um usuário com base nesses dados da Steam e gere uma mensagem sarcástica, fale como alguem jovem, use memes e girias:
+      Analise os hábitos de jogo de um usuário com base nesses dados da Steam e faça um comentario. Uma abordagem mais empática, como se fosse algum amigo te analisando de forma leve e com piadas, foque mais no genero mais jogado não cite os jogos
+      Exemplo:
+      "FIFA e Rocket League no topo? Clássico. Te imagino jogando de fone, xingando juiz invisível, e dizendo só mais uma às 3h da manhã."
+      "Com esse tanto de horas de jogo ja dava pra ter se formado em medicina".
+        Maximo de 300 caracteres, não utilize # e nem emojis. Conte uma curiosidade do tipo de pessao que joga o genero que o usuario mais joga:
 
-    - Nome: ${infos.Username}
-    - Total de jogos: ${infos.totalGames}
-    - Tempo jogado em cada genero: ${infos.totalTimePlayedPerGenre.map((g) => `${g.genre}: ${g.time.toFixed(2)}h`).join(', ')}
-    - Top 5 jogos mais jogados: ${infos.shorterTop5Games.map((g) => `${g.name}: ${g.hours.toFixed(2)}h`).join(', ')}
- 
-  
-    Seja engraçado, e ligeiramente crítico com o jogador, pode brincar com as informações, não é necessario comentar sobre todos os generos, mas faça o usuario dar uma risada ao ler sua resposta, fale menos dos jogos, e mais nos generos, seja curta e faça uma resposta pequena, maximo de 200 caracteres, não use hashtags, inicie com "{nome do jogador}, o {tipo de jogador que ele é}", maximo de 200 caracteres.
-    `;
+      - Nome: ${infos.Username}
+      - Total de jogos: ${infos.totalGames}
+      - Tempo jogado em cada genero: ${infos.totalTimePlayedPerGenre.map((g) => `${g.genre}: ${g.time.toFixed(2)}h`).join(', ')}
+      - Top 5 jogos mais jogados: ${infos.shorterTop5Games.map((g) => `${g.name}: ${g.hours.toFixed(2)}h`).join(', ')}`
+    ;
 
 
   useEffect(() => {

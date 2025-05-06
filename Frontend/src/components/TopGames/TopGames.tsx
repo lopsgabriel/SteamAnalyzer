@@ -45,13 +45,15 @@ const TopGames: FC<TopGamesProps> = ({info}) => {
    const [AIMessage, setAIMessage] = useState('');
 
    const prompt = `
-  Analise os hábitos de jogo de um usuário com base nesses dados da Steam e gere uma mensagem sarcástica, fale como alguem jovem, use memes e girias:
+   Analise os hábitos de jogo de um usuário com base nesses dados da Steam e faça um comentario. Uma abordagem mais empática, como se fosse algum amigo te analisando de forma leve. Mas também pode fazer piadas.
+    Exemplo:
+   "FIFA e Rocket League no topo? Clássico. Te imagino jogando de fone, xingando juiz invisível, e dizendo só mais uma às 3h da manhã."
+   "Com esse tanto de horas de jogo ja dava pra ter se formado em medicina".
+    Maximo de 300 caracteres, não utilize # e nem emojis, não rir com hahaha, conte uma curiosidade das pessoas que jogam o jogo mais jogado dele. Cite um ponto forte dos jogadores daquele jogo. foque no jogo mais jogado.
 
   - Nome: ${info.Username}
   - Top 5 jogos mais jogados: ${info.top5games.map((g) => `${g.game}: ${g.hours.toFixed(2)}h`).join(', ')}
 
-
-  Seja engraçado, e ligeiramente crítico com o jogador, coloque enfase nos jogos mais jogados, seja direta e curta, maximo de 250 caracteres, não use hashtags, não comente o nome do jogador, maximo de 250 caracteres, não use palavrões, não cumprimente, aja como se já estivesse no meio de uma conversa, e seja direto sem cumprimentos, não use hashtags
   `;
 
   useEffect(() => {

@@ -24,16 +24,17 @@ const SteamHistory: FC<SteamHistoryProps> = ({ info }) => {
   const geminiKey = 'AIzaSyDr7m5RBBPpjJHCILFXx2DVu5deQr-HW4s'
 
   const prompt = `
-  Analise os hábitos de jogo de um usuário com base nesses dados da Steam e gere uma mensagem sarcástica,
-   humilhe o jogador e deboche do jogador, não tenha pena, fale como alguem jovem:
+      Analise os hábitos de jogo de um usuário com base nesses dados da Steam e faça um comentario. Uma abordagem mais empática, como se fosse algum amigo te analisando de forma leve. Mas também pode fazer piadas.
+      Exemplo:
+    "FIFA e Rocket League no topo? Clássico. Te imagino jogando de fone, xingando juiz invisível, e dizendo só mais uma às 3h da manhã."
+    "Com esse tanto de horas de jogo ja dava pra ter se formado em medicina".
+      Maximo de 300 caracteres, não utilize # e nem emojis, não rir com hahaha. Conte uma curiosidade do dia que a steam do usuario foi criada, e faça uma piada com a quantidade de horas jogadas:
 
-  - Nome: ${info.Username}
-  - Total de horas jogadas: ${info.totalTimePlayed.toFixed(2)}h
-  - Conta criada em: ${info.DateJoined} (${info.DaysOnSteam} dias na Steam)
-  - Total de jogos: ${info.totalGames}
-
-  Seja engraçado, sarcástico, e ligeiramente crítico com o jogador, pode humilhar mesmoo, seja direta e curta, não utilize hashtags, não usar #, maximo de 250 caracteres.
-  `;
+    - Nome: ${info.Username}
+    - Total de horas jogadas: ${info.totalTimePlayed.toFixed(2)}h
+    - Conta criada em: ${info.DateJoined} (${info.DaysOnSteam} dias na Steam)
+    - Total de jogos: ${info.totalGames}.`
+  ;
 
   useEffect(() => {
     const fetchData = async () => {

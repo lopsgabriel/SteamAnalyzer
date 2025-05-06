@@ -1,7 +1,7 @@
 import { FC, useState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSteam } from '@fortawesome/free-brands-svg-icons'
-import { Typewriter, SteamHistory, GenreStats, TopGames, MotionDiv, CategoryStats } from "@/components";
+import { Typewriter, SteamHistory, GenreStats, TopGames, FinalAnalysis, MotionDiv, CategoryStats } from "@/components";
 import axios from "axios";
 import { faCircleQuestion } from '@fortawesome/free-solid-svg-icons'
 
@@ -143,6 +143,7 @@ const Home: FC = () => {
                 </div>
               </div>
             </div>
+            <FinalAnalysis />
             {formattedSteamInfo && formattedGenreInfo && formattedTopGamesInfo && formattedCategoryInfo && (
               <div ref={analysisRef} className="w-full items-center justify-center flex-col flex">
                 <MotionDiv>

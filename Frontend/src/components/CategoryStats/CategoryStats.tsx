@@ -18,17 +18,15 @@ const CategoryStats: FC<CategoryStatsProps> = ({ infos }) => {
 
   const geminiKey = 'AIzaSyDr7m5RBBPpjJHCILFXx2DVu5deQr-HW4s'
   const prompt = `
-  Você é uma IA que analisa perfis de jogadores da Steam com base em estatísticas de tempo de jogo por categoria. Seu papel é gerar uma frase interpretativa e levemente descontraída sobre o estilo de jogo da pessoa com base nas categorias mais jogadas.
-  Aqui estão os dados do jogador (em horas):
+    Analise os hábitos de jogo de um usuário com base nesses dados da Steam e faça um comentario. Uma abordagem mais empática, como se fosse algum amigo te analisando de forma leve. Mas também pode fazer piadas.
+      Exemplo:
+    "FIFA e Rocket League no topo? Clássico. Te imagino jogando de fone, xingando juiz invisível, e dizendo só mais uma às 3h da manhã."
+    "Com esse tanto de horas de jogo ja dava pra ter se formado em medicina".
+      Maximo de 300 caracteres, não utilize # e nem emojis, não rir com hahaha, foque na categoria mais jogada, conte uma curiosidade comportamental dos players que jogam a categoria mais jogada dele.
 
-  - Nome: ${infos.Username}
-  - Top 5 jogos mais jogados: ${infos.ChartData.map((g) => `${g.name}: ${g.hours.toFixed(2)}h`).join(', ')}
-
-  Gere uma frase curta (1 ou 2 linhas), **sem sarcasmo**, apenas com uma leitura leve, humana e interpretativa sobre o perfil de jogo da pessoa. Não cite o nome do jogador e fale como se estivesse falando diretamente com ele utilizando "você". Leve em consideração a categoria mais jogada. Exemplo de tom desejado:
-
-  > “Você tem um perfil bem equilibrado entre jogos solo e multiplayer. Provavelmente curte tanto explorar sozinho quanto competir ou cooperar com amigos.”
-
-  Agora gere uma nova frase baseada nas estatísticas acima. Maximo de 250 caracteres`;
+    - Nome: ${infos.Username}
+    - Top 5 categorias mais jogadas: ${infos.ChartData.map((g) => `${g.name}: ${g.hours.toFixed(2)}h`).join(', ')}`
+  ;
 
 
   useEffect(() => {
