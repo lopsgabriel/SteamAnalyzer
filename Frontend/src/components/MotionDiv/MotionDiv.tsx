@@ -10,7 +10,7 @@ export default function MotionDiv({ children }: MotionDivProps) {
 
   const { ref: inViewRef, inView } = useInView({
     triggerOnce: true, // Só anima na primeira vez que entrar na tela
-    threshold: 0.2     // Só considera "visível" quando 20% do bloco aparece
+    threshold: 0    // Só considera "visível" quando 20% do bloco aparece
   });
 
   return (

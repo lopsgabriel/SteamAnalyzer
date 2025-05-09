@@ -15,7 +15,14 @@ const Home: FC = () => {
     if (steamData && analysisRef.current) {
       analysisRef.current.scrollIntoView({ behavior: "smooth" });
     }
-    if (formattedGenreInfo){
+    if (steamData) {
+      console.table({
+        formattedSteamInfo,
+        formattedGenreInfo,
+        formattedTopGamesInfo,
+        formattedCategoryInfo,
+        formattedFinalAnalysisInfo,
+      });
     }
   }, [steamData]);
 
@@ -69,6 +76,20 @@ const Home: FC = () => {
     ChartData: Object.entries(steamData.info["total time played per category"]).map(
       ([name, hours]) => ({ name, hours: Number(hours) })
     )
+  } : null;
+
+  const playerType = steamData ? steamData.info["player type"] : null;
+  const formattedFinalAnalysisInfo = steamData ? {
+    Username: steamData.info["Username"],
+    Avatar: steamData.info["Avatar URL"],
+    Tittle: playerType.title,
+    Punchline: playerType.punchline,
+    Description: playerType.description,
+    Stats: playerType.stats.map((o: Record<string, number>) => {
+      const [label, value] = Object.entries(o)[0];
+      return { label, value };
+    }),
+    Img: `http://127.0.0.1:8000${playerType.img}`
   } : null;
 
 
@@ -143,14 +164,14 @@ const Home: FC = () => {
                 </div>
               </div>
             </div>
-            <FinalAnalysis />
-            {formattedSteamInfo && formattedGenreInfo && formattedTopGamesInfo && formattedCategoryInfo && (
+            {formattedSteamInfo && formattedGenreInfo && formattedTopGamesInfo && formattedCategoryInfo && formattedFinalAnalysisInfo && (
               <div ref={analysisRef} className="w-full items-center justify-center flex-col flex">
                 <MotionDiv>
                   <SteamHistory info={formattedSteamInfo} />
                   <TopGames info={formattedTopGamesInfo} />
                   <GenreStats infos={formattedGenreInfo} />
                   <CategoryStats infos={formattedCategoryInfo} />
+                  <FinalAnalysis infos={formattedFinalAnalysisInfo} />
                 </MotionDiv>
               </div>
             )}

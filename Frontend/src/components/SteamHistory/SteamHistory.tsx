@@ -28,7 +28,7 @@ const SteamHistory: FC<SteamHistoryProps> = ({ info }) => {
       Exemplo:
     "FIFA e Rocket League no topo? Clássico. Te imagino jogando de fone, xingando juiz invisível, e dizendo só mais uma às 3h da manhã."
     "Com esse tanto de horas de jogo ja dava pra ter se formado em medicina".
-      Maximo de 300 caracteres, não utilize # e nem emojis, não rir com hahaha. Conte uma curiosidade do dia que a steam do usuario foi criada, e faça uma piada com a quantidade de horas jogadas:
+      Maximo de 300 caracteres, não utilize # e nem emojis, não rir com hahaha. Diga a data onde a steam do usuario foi criada, e depois conte uma curiosidade do dia que a steam do usuario foi criada, e faça uma piada com a quantidade de horas jogadas:
 
     - Nome: ${info.Username}
     - Total de horas jogadas: ${info.totalTimePlayed.toFixed(2)}h

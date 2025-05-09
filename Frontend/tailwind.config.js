@@ -82,7 +82,11 @@ export default {
   				'4': 'hsl(var(--chart-4))',
   				'5': 'hsl(var(--chart-5))'
   			}
-  		}
+  		},
+			rotate: {
+				'180': '180deg',
+				'-180': '-180deg',
+			},
   	}
   },
   plugins: [daisyui, require("tailwindcss-animate")],
