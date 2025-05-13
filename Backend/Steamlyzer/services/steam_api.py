@@ -33,37 +33,3 @@ def verify_steamid_or_vanity_url(raw: str) -> str | None:
     if re.fullmatch(r"[\w-]+", raw):
         return resolve_vanity_url(raw)
     return None
-
-# def verify_steamid_or_vanity_url(steam_id):
-#     # verifica se é uma url completa com o id64
-#     match_profiles = re.search(r"steamcommunity\.com/profiles/(\d+)", steam_id)
-#     if match_profiles:
-#         return match_profiles.group(1)
-    
-#     #verifica se é um vanity url e retorna o steam id64
-#     match_id = re.search(r"steamcommunity\.com/id/([\w-]+)", steam_id)
-#     if match_id:
-#         custom_url = match_id.group(1)
-#         print("mandando 1 request 2")
-#         resolve_url = f"https://api.steampowered.com/ISteamUser/ResolveVanityURL/v1/?key={STEAM_API_KEY}&vanityurl={custom_url}"
-#         response = requests.get(resolve_url)
-#         data = response.json()
-
-#         if response.status_code != 200:
-#             data =make_request_with_retry(resolve_url)
-#             print("Erro ao chamar API da Steam:", response.status_code, response.text)
-
-
-#         if data["response"]["success"] == 1:
-#             print(data["response"]["steamid"])
-#             return data["response"]["steamid"]
-#         else:
-#             return None
-#     #verifica se é o id64 direto
-#     if re.fullmatch(r"\d{17}", steam_id):
-#         return steam_id
-    
-#     if re.fullmatch(r"[\w-]+", steam_id):
-#         return resolve_vanity_url(steam_id)
-    
-#     return None
