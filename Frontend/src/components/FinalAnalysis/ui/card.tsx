@@ -2,8 +2,6 @@ import { FC } from "react";
 
 interface CardProps {
   infos: {
-    Username: string;
-    Avatar: string;
     Tittle: string;
     Punchline: string;
     Description: string;
@@ -34,8 +32,8 @@ const StatBar = ({ label, value }: StatBarProps) => (
 const Card: FC<CardProps> = ({ infos }) => {
   
   const user = {
-    name: infos.Username,
-    avatar: infos.Avatar,
+    name: localStorage.getItem('username'),
+    avatar: localStorage.getItem('steamAvatar'),
   };
 
   const playerType = {
@@ -46,6 +44,7 @@ const Card: FC<CardProps> = ({ infos }) => {
     img: infos.Img
   };
 
+
 // const Card: FC = () => {
   return (
         <div className="flex justify-center rounded-2xl border-y-4 border-amber-500">
@@ -55,15 +54,15 @@ const Card: FC<CardProps> = ({ infos }) => {
             {/* Top banner */}
             <div className="relative flex items-center justify-center px-5 py-3 bg-gradient-to-b from-zinc-900/90 to-zinc-900 rounded-t-xl">
               <img
-                src={user.avatar}
-                alt={user.name}
+                src={user.avatar??''}
+                alt={user.name??''}
                 className="absolute -top-6 left-4 h-16 w-16 rounded-full object-cover
                   ring-2 ring-amber-400 ring-offset-2 ring-offset-zinc-900
                   shadow-md transition-transform duration-300 hover:scale-105 z-20"
               />
               <div className="font-bold text-xl tracking-wide text-amber-100 hover:scale-105 hover:text-amber-500 duration-300">
-              {user.name}
-            </div>
+                {user.name}
+              </div>
             </div>
 
             {/* Artwork area */}

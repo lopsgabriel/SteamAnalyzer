@@ -6,13 +6,13 @@ import axios from "axios";
 
 interface CategoryStatsProps {
   infos: {
-    Username: string;
     ChartData: Array<{ name: string; hours: number }>;
   };
 }
 
 
 const CategoryStats: FC<CategoryStatsProps> = ({ infos }) => {
+  const username = localStorage.getItem('username');
   const [AIMessage, setAIMessage] = useState('');
   const chartData = infos.ChartData
 
@@ -24,7 +24,7 @@ const CategoryStats: FC<CategoryStatsProps> = ({ infos }) => {
     "Com esse tanto de horas de jogo ja dava pra ter se formado em medicina".
       Maximo de 300 caracteres, não utilize # e nem emojis, não rir com hahaha, foque na categoria mais jogada, conte uma curiosidade comportamental dos players que jogam a categoria mais jogada dele.
 
-    - Nome: ${infos.Username}
+    - Nome: ${username}
     - Top 5 categorias mais jogadas: ${infos.ChartData.map((g) => `${g.name}: ${g.hours.toFixed(2)}h`).join(', ')}`
   ;
 

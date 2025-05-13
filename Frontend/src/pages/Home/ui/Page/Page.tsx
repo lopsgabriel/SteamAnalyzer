@@ -3,12 +3,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSteam } from '@fortawesome/free-brands-svg-icons'
 import { Typewriter, SteamHistory, GenreStats, TopGames, FinalAnalysis, MotionDiv, CategoryStats } from "@/components";
 import axios from "axios";
-import { faCircleQuestion } from '@fortawesome/free-solid-svg-icons'
-
-// Componentes: SteamHistory, GenreStats, CategoryStats, TopGames, FinalAnalysis
+import { faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
+import { TailSpin } from 'react-loader-spinner';
 
 const Home: FC = () => {
   const [steamData, setSteamData] = useState<any | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const analysisRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -16,6 +17,8 @@ const Home: FC = () => {
       analysisRef.current.scrollIntoView({ behavior: "smooth" });
     }
     if (steamData) {
+      setErrorMessage(null);
+      setLoading(false);
       console.table({
         formattedSteamInfo,
         formattedGenreInfo,
@@ -23,23 +26,31 @@ const Home: FC = () => {
         formattedCategoryInfo,
         formattedFinalAnalysisInfo,
       });
+      localStorage.setItem("steamAvatar", steamData.info["Avatar URL"]);
+      localStorage.setItem("username", steamData.info["Username"]);
+      localStorage.setItem("steamID", steamData.info["steam_id"]);
+      localStorage.setItem("profileURL", steamData.info["Profile URL"]);
     }
+    
   }, [steamData]);
 
   async function fetchUserData(steamID: string) {
     try {
+      setErrorMessage(null);
+      setLoading(true);
       const response = await axios.get(`http://127.0.0.1:8000/steam/analyze/?steam_id=${steamID}`);
       setSteamData(response.data);
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      setLoading(false);
+      if (error.response?.status === 400) {
+        setErrorMessage(error.response?.data["error"]);
+      } else {
+        setErrorMessage("Oops! Algo deu errado, tente novamente.");
+      }
     }
   }
 
   const formattedSteamInfo = steamData ? {
-    steam_id: steamData.info["steam_id"],
-    Username: steamData.info["Username"],
-    ProfileURL: steamData.info["Profile URL"],
-    AvatarURL: steamData.info["Avatar URL"],
     DateJoined: steamData.info["Date Joined"],
     DaysOnSteam: steamData.info["Days on Steam"],
     totalGames: steamData.info["total games"],
@@ -55,7 +66,6 @@ const Home: FC = () => {
   : null;
 
   const formattedGenreInfo = steamData ? {
-    Username: steamData.info["Username"],
     totalTimePlayed: steamData.info["total time played"],
     totalTimePlayedPerGenre: Object.entries(steamData.info["total time played per genre"]).map(([genre, time]) => ({
       genre,
@@ -66,13 +76,11 @@ const Home: FC = () => {
   } : null;
 
   const formattedTopGamesInfo = steamData ? {
-    Username: steamData.info["Username"],
     totalGames: steamData.info["total games"],
     top5games: steamData.info["top 5 games"]
   } : null;
 
   const formattedCategoryInfo = steamData ? {
-    Username: steamData.info["Username"],
     ChartData: Object.entries(steamData.info["total time played per category"]).map(
       ([name, hours]) => ({ name, hours: Number(hours) })
     )
@@ -80,8 +88,6 @@ const Home: FC = () => {
 
   const playerType = steamData ? steamData.info["player type"] : null;
   const formattedFinalAnalysisInfo = steamData ? {
-    Username: steamData.info["Username"],
-    Avatar: steamData.info["Avatar URL"],
     Tittle: playerType.title,
     Punchline: playerType.punchline,
     Description: playerType.description,
@@ -91,7 +97,6 @@ const Home: FC = () => {
     }),
     Img: `http://127.0.0.1:8000${playerType.img}`
   } : null;
-
 
   return (
     <>
@@ -108,9 +113,13 @@ const Home: FC = () => {
                     type="text"
                     className="peer w-full bg-transparent pl-10 text-slate-300 text-xl border border-slate-200 rounded-2xl px-3 py-2 transition-all duration-300 ease-in-out focus:outline-none hover:border-slate-500 shadow-sm focus:shadow"
                   />
-                  <label className="pointer-events-none absolute ml-5 cursor-text bg-base-200 px-1 left-2.5 top-10 text-slate-400 text-sm transition-all transform origin-left peer-focus:top-5 peer-focus:left-2.5 peer-focus:text-xs peer-focus:text-slate-400 peer-focus:scale-90">
+                  <label className="pointer-events-none absolute ml-5 cursor-text bg-base-200 px-1 left-2.5 top-10 pr-80 text-slate-400 text-sm transition-all transform origin-left peer-focus:top-5 peer-focus:left-2.5 rounded-full peer-focus:text-xs peer-focus:text-slate-400 peer-focus:scale-90 peer-focus:pr-1">
                   Perfil Steam
                   </label>
+                  <div className="flex items-center justify-center mt-4 duration-300">
+                    {loading && <TailSpin color="white" height={40} width={40} />}
+                    {errorMessage && <p className="text-red-500 text-sm">{errorMessage}</p>}
+                  </div>
                   <button
                     type="submit"
                     className="mt-4 bg-amber-500 text-white px-4 py-2 rounded-xl font-medium transition-transform duration-300 hover:scale-105 active:scale-95"

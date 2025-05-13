@@ -6,10 +6,6 @@ import { CalendarDays, Gamepad2, Clock, Hourglass } from 'lucide-react';
 
 interface SteamHistoryProps {
   info: {
-    steam_id: string;
-    Username: string;
-    ProfileURL: string;
-    AvatarURL: string;
     DateJoined: string; // formato: "DD-MM-YYYY"
     DaysOnSteam: number;
     totalGames: number;
@@ -18,7 +14,13 @@ interface SteamHistoryProps {
 }
 
 const SteamHistory: FC<SteamHistoryProps> = ({ info }) => {
-  const { Username, ProfileURL, AvatarURL, DaysOnSteam, totalGames, totalTimePlayed } = info;
+  const user = {
+    Username: localStorage.getItem('username'),
+    avatar: localStorage.getItem('steamAvatar'),
+    steamID: localStorage.getItem('steamID'),
+    profileURL: localStorage.getItem('profileURL'),
+  }
+  const {DaysOnSteam, totalGames, totalTimePlayed } = info;
   const [AIMessage, setAIMessage] = useState('');
   const yearsOnSteam = (Number(DaysOnSteam) / 365).toFixed(1); 
   const geminiKey = 'AIzaSyDr7m5RBBPpjJHCILFXx2DVu5deQr-HW4s'
@@ -30,7 +32,7 @@ const SteamHistory: FC<SteamHistoryProps> = ({ info }) => {
     "Com esse tanto de horas de jogo ja dava pra ter se formado em medicina".
       Maximo de 300 caracteres, não utilize # e nem emojis, não rir com hahaha. Diga a data onde a steam do usuario foi criada, e depois conte uma curiosidade do dia que a steam do usuario foi criada, e faça uma piada com a quantidade de horas jogadas:
 
-    - Nome: ${info.Username}
+    - Nome: ${user.Username}
     - Total de horas jogadas: ${info.totalTimePlayed.toFixed(2)}h
     - Conta criada em: ${info.DateJoined} (${info.DaysOnSteam} dias na Steam)
     - Total de jogos: ${info.totalGames}.`
@@ -71,12 +73,12 @@ const SteamHistory: FC<SteamHistoryProps> = ({ info }) => {
   return (
     <div className="bg-zinc-900 text-white p-6 rounded-2xl border-b-4 hover:shadow-zinc-900 mt-10 duration-300 border-amber-500 shadow-lg flex flex-col items-center gap-3 w-full max-w-2xl mx-auto">
       <img
-        src={AvatarURL}
-        alt={`${Username}'s avatar`}
+        src={user.avatar ?? ''}
+        alt={`${user.Username ?? ''}'s avatar`}
         className="w-24 h-24 rounded-full hover:scale-110 duration-300" 
       />
-      <a href={ProfileURL} target="_blank" className="text-2xl font-bold  hover:text-amber-400 transition-colors">
-        {Username}
+      <a href={user.profileURL ?? ''} target="_blank" className="text-2xl font-bold  hover:text-amber-400 transition-colors">
+        {user.Username}
       </a>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-2 text-sm text-center w-full">
         <div className="bg-zinc-800 p-3 rounded-xl flex flex-col justify-center items-center hover:scale-110 duration-300">

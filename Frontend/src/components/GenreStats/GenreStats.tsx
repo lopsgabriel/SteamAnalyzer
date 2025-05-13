@@ -5,7 +5,6 @@ import axios from "axios";
 import MotionDiv from "../MotionDiv/MotionDiv";
 interface GenreStatsProps {
   infos: {
-    Username: string;
     totalTimePlayed: number;
     totalTimePlayedPerGenre: Array<{ genre: string; time: number }>;
     totalGames: number;
@@ -17,6 +16,7 @@ interface GenreStatsProps {
 }
 
 const GenreStats: FC<GenreStatsProps> = ({ infos }) => {
+  const username = localStorage.getItem('username');
   const [AIMessage, setAIMessage] = useState('');
   const geminiKey = 'AIzaSyDr7m5RBBPpjJHCILFXx2DVu5deQr-HW4s'
     const prompt = `
@@ -26,7 +26,7 @@ const GenreStats: FC<GenreStatsProps> = ({ infos }) => {
       "Com esse tanto de horas de jogo ja dava pra ter se formado em medicina".
         Maximo de 300 caracteres, não utilize # e nem emojis. Conte uma curiosidade do tipo de pessao que joga o genero que o usuario mais joga:
 
-      - Nome: ${infos.Username}
+      - Nome: ${username}
       - Total de jogos: ${infos.totalGames}
       - Tempo jogado em cada genero: ${infos.totalTimePlayedPerGenre.map((g) => `${g.genre}: ${g.time.toFixed(2)}h`).join(', ')}
       - Top 5 jogos mais jogados: ${infos.shorterTop5Games.map((g) => `${g.name}: ${g.hours.toFixed(2)}h`).join(', ')}`
