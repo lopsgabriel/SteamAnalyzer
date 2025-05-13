@@ -2,9 +2,9 @@ from rest_framework.viewsets import ViewSet
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from datetime import datetime
-import aiohttp
 import asyncio
 import os
+import aiohttp
 import nest_asyncio
 import requests
 import re
@@ -24,6 +24,7 @@ headers = {
         }
 
 def make_request_with_retry(url):
+    # Logica de retries
     retries = 5
     delay = 1  # Delay inicial de 1 segundo
     for i in range(retries):
@@ -84,7 +85,6 @@ async def fetch_game_genres(session, game):
     appid = game["appid"]
     print("mandando 1 request 6")
     game_details_url = f"https://store.steampowered.com/api/appdetails?appids={appid}&l=en&cc=BR"
-
 
     try:
         async with session.get(game_details_url, headers=headers) as resp:
@@ -239,14 +239,14 @@ async def fetch_user_profile(session, steam_id):
                 print(f"Erro ao chamar API da Steam: {resp.status}")
                 error_message = await resp.text()  # Pega a resposta em texto
                 print(f"Mensagem de erro: {error_message}")
-                return {"erro": f"Erro ao buscar dados do perfil da Steam: {resp.status} - {error_message}"}
+                return {"error": f"Erro ao buscar dados do perfil da Steam: {resp.status} - {error_message}"}
 
             data = await resp.json()
             return data
         
     except Exception as e:
         print(f"Erro ao buscar dados do perfil da Steam: {str(e)}")
-        return {"erro": f"Erro ao buscar dados do perfil da Steam: {str(e)}"}
+        return {"error": f"Erro ao buscar dados do perfil da Steam: {str(e)}"}
     
 class SteamAnalyzerViewSet(ViewSet):
 
@@ -256,11 +256,11 @@ class SteamAnalyzerViewSet(ViewSet):
             steam_id = request.query_params.get("steam_id")
 
             if not steam_id:
-                return Response({"error": "steam_id is required"}, status=400)
+                return Response({"error": "Preencha o campo do usuario"}, status=400)
             
             steam_id = verify_steamid_or_vanity_url(steam_id)
             if not steam_id:
-                return Response({"error": "steam_id is invalid"}, status=400)
+                return Response({"error": "Usuario não encontrado. Tente novamente."}, status=400)
             
             print("mandando 1 request 3")
             #busca jogos do usuario pela steamID          
@@ -388,7 +388,6 @@ class SteamAnalyzerViewSet(ViewSet):
                 "total time played per category": categories_hours,
                 "player type": player_type,
                 "top 5 games": top_5_games
-                
             }
         }
         return Response(result)
