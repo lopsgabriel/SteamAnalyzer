@@ -105,7 +105,7 @@ def define_player_type(genres_hours, categories_hours):
         return {
             "title": "O Craque",
             "punchline": " Até no tutorial ele bate no peito e pede o passe.",
-            "description": "Não importa o que ele jogue, o Craque não é só talento, mas também disciplina, competitividade e a busca constante por evolução. Dentro do campo ou quadra, ele treina, refina habilidades e transforma a pressão em combustível para a vitória. Não importa o esporte, o objetivo é sempre dominar a dinâmica do jogo, antecipar movimentos e explorar cada oportunidade. Para ele, o sucesso vem tanto da técnica quanto da mentalidade forte, e cada partida é tratada com a seriedade de uma verdadeira disputa. A vitória não é só esperada, é construída lance a lance",
+            "description": "Não importa o que ele jogue, o Craque não é só talento, mas também disciplina, competitividade e a busca constante por evolução. Dentro do campo ou quadra, ele treina, refina habilidades e transforma a pressão em combustível para a vitória. Não importa o esporte, o objetivo é sempre dominar a dinâmica do jogo, antecipar movimentos e explorar cada oportunidade. Para ele, o sucesso vem tanto da técnica quanto da mentalidade forte, e cada partida é tratada com a seriedade de uma verdadeira disputa. A vitória não é só esperada, é construída lance a lance.",
             
             "stats": [
                 { "Força": 7},
@@ -165,8 +165,3 @@ def define_player_type(genres_hours, categories_hours):
             ],
         "img": f'{base_url}JogadorDiferenciado.png',
       }
-        
-        
-    
-
-   
