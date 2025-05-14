@@ -73,3 +73,26 @@
   backface-visibility: hidden;
 }
 
+@keyframes pulse-glow {
+  0% {
+    box-shadow: 0 0 0px #facc15;
+  }
+  50% {
+    box-shadow: 0 0 10px #facc15;
+  }
+  100% {
+    box-shadow: 0 0 0px #facc15;
+  }
+}
+
+@keyframes sheen {
+  0% {
+    left: -75%;
+  }
+  100% {
+    left: 125%;
+  }
+}
+.group-hover\:animate-sheen {
+  animation: sheen 1.5s infinite;
+}
