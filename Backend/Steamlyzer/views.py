@@ -6,6 +6,7 @@ import asyncio
 import aiohttp
 import nest_asyncio
 import requests
+from collections import Counter
 from setup.utils.player_type_logic import define_player_type
 from Steamlyzer.services.games import gather_data_in_batches, fetch_details
 from Steamlyzer.services.profile import fetch_user_profile
@@ -70,33 +71,35 @@ class SteamAnalyzerViewSet(ViewSet):
         days_since_creation = delta.days
 
         games_data = asyncio.run(gather_data_in_batches(games, steam_id, most_played_games))
-        shorter_games_data = []
-        for game_data in games_data:
-            shorter_games_data.append({
-            "game": game_data.get("game", "Unknown"),
-            "image": game_data.get("image", " unknown"),
-            "appid": game_data.get("appid", 0),
-            "total_achieved": game_data.get("total_achieved", 0),
-            "progress_achievements": game_data.get("progress_achievements", []),
-            "hours": game_data.get("hours", 0),
-        })
-            
-        even_shorter_games_data = (game for game in shorter_games_data if game["hours"] > 0) 
-        even_shorter_games_data = list(even_shorter_games_data)
-        even_shorter_games_data.sort(key=lambda game: game["hours"], reverse=True)
-        top_5_games = even_shorter_games_data[:5]
 
-        for game in games_data:
-            for genre in game["genres"]:
-                if genre in genres_hours:
-                    genres_hours[genre] += game["hours"]
-                else:
-                    genres_hours[genre] = game["hours"]
-            for category in game["categories"]: 
-                if category in categories_hours:
-                    categories_hours[category] += game["hours"]
-                else:
-                    categories_hours[category] = game["hours"]
+        # Cria um dicionário com os dados dos jogos
+        wanted = {
+            "game": "Unknown",
+            "image": "unknown",
+            "appid": 0,
+            "total_achieved": 0,
+            "progress_achievements": [],
+            "hours": 0,
+        }
+        shorter_games = [
+            {k: g.get(k, default) for k, default in wanted.items()}
+            for g in games_data
+        ]
+
+        # Filtra jogos com horas > 0, ordena, pega top‑5
+        top_5_games = sorted(
+            (g for g in shorter_games if g["hours"] > 0),
+            key=lambda g: g["hours"],
+            reverse=True
+        )[:5]
+        
+        # Soma horas por gênero e categoria
+        genres_hours     = Counter()
+        categories_hours = Counter()
+
+        for g in games_data:
+            genres_hours.update({genre: g["hours"] for genre in g.get("genres", [])})
+            categories_hours.update({cat: g["hours"] for cat in g.get("categories", [])})
 
         genres_hours = dict(sorted(genres_hours.items(), key=lambda item: item[1], reverse=True)[:6])
         categories_hours = dict(sorted(categories_hours.items(), key=lambda item: item[1], reverse=True)[:6])
