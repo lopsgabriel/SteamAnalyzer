@@ -11,6 +11,7 @@ from setup.utils.player_type_logic import define_player_type
 from Steamlyzer.services.games import gather_data_in_batches, fetch_details
 from Steamlyzer.services.profile import fetch_user_profile
 from Steamlyzer.services.steam_api import verify_steamid_or_vanity_url
+from Steamlyzer.services.ai_responses import ai_responses
 from Steamlyzer.utils.retry import make_request_with_retry
 from Steamlyzer.utils.constants import STEAM_API_KEY
 nest_asyncio.apply()
@@ -29,7 +30,6 @@ class SteamAnalyzerViewSet(ViewSet):
             if not steam_id:
                 return Response({"error": "Usuario não encontrado. Tente novamente."}, status=400)
             
-            print("mandando 1 request 3")
             #busca jogos do usuario pela steamID          
             url = f"https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?key={STEAM_API_KEY}&steamid={steam_id}&include_appinfo=1&include_played_free_games=1"
             response = requests.get(url)
@@ -48,9 +48,7 @@ class SteamAnalyzerViewSet(ViewSet):
 
         games = data.get("response", {}).get("games", [])
         most_played_games = sorted(games, key=lambda x: x["playtime_forever"], reverse=True)[:10]
-        print(most_played_games)
 
-        
         async def gather_user_profile():
             async with aiohttp.ClientSession() as session:
                 profile_data = await fetch_user_profile(session, steam_id)
@@ -60,7 +58,6 @@ class SteamAnalyzerViewSet(ViewSet):
         categories_hours = {}
 
         user_profile_data = asyncio.run(gather_user_profile())
-        print("🧠 Dados do perfil retornado:", user_profile_data)
         user_data = user_profile_data.get("response", {}).get("players", [{}])[0]
 
         timecreated = user_data.get("timecreated", 0)
@@ -104,7 +101,9 @@ class SteamAnalyzerViewSet(ViewSet):
         genres_hours = dict(sorted(genres_hours.items(), key=lambda item: item[1], reverse=True)[:6])
         categories_hours = dict(sorted(categories_hours.items(), key=lambda item: item[1], reverse=True)[:6])
         player_type = define_player_type(genres_hours, categories_hours)
-        
+        time_played = round((sum(int(game["playtime_forever"]) for game in games if isinstance(game, dict) and "playtime_forever" in game) / 60), 2),
+        ai_responses_data = ai_responses(
+                user_data.get("personaname", "Unknown"), (created_at.strftime("%d-%m-%Y")), len(games), time_played, genres_hours, categories_hours, top_5_games, days_since_creation)
         result = {
             "info": {
                 "steam_id": steam_id,
@@ -115,11 +114,12 @@ class SteamAnalyzerViewSet(ViewSet):
                 "Days on Steam": days_since_creation,
                 "Visibility State": user_data.get("communityvisibilitystate", ""),
                 "total games": len(games),
-                "total time played":  round((sum(int(game["playtime_forever"]) for game in games if isinstance(game, dict) and "playtime_forever" in game) / 60), 2),
+                "total time played":  time_played,
                 "total time played per genre": genres_hours,
                 "total time played per category": categories_hours,
                 "player type": player_type,
                 "top 5 games": top_5_games
-            }
+            },
+            "IA_response": ai_responses_data
         }
         return Response(result)
