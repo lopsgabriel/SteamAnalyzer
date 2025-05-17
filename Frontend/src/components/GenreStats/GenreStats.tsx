@@ -1,49 +1,26 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect } from "react";
 import { RiInformationLine } from "react-icons/ri";
 import ApexCharts, { ApexOptions } from "apexcharts";
-import axios from "axios";
 import MotionDiv from "../MotionDiv/MotionDiv";
 interface GenreStatsProps {
   infos: {
     totalTimePlayed: number;
     totalTimePlayedPerGenre: Array<{ genre: string; time: number }>;
     totalGames: number;
+    AImessage: string
     shorterTop5Games: Array<{ 
       name: string;
       hours: number;
        }>;
-  };
+    };
 }
 
 const GenreStats: FC<GenreStatsProps> = ({ infos }) => {
-  const username = localStorage.getItem('username');
-  const [AIMessage, setAIMessage] = useState('');
-  const geminiKey = 'AIzaSyDr7m5RBBPpjJHCILFXx2DVu5deQr-HW4s'
-    const prompt = `
-      Analise os hábitos de jogo de um usuário com base nesses dados da Steam e faça um comentario. Uma abordagem mais empática, como se fosse algum amigo te analisando de forma leve e com piadas, foque mais no genero mais jogado não cite os jogos
-      Exemplo:
-      "FIFA e Rocket League no topo? Clássico. Te imagino jogando de fone, xingando juiz invisível, e dizendo só mais uma às 3h da manhã."
-      "Com esse tanto de horas de jogo ja dava pra ter se formado em medicina".
-        Maximo de 300 caracteres, não utilize # e nem emojis. Conte uma curiosidade do tipo de pessao que joga o genero que o usuario mais joga:
-
-      - Nome: ${username}
-      - Total de jogos: ${infos.totalGames}
-      - Tempo jogado em cada genero: ${infos.totalTimePlayedPerGenre.map((g) => `${g.genre}: ${g.time.toFixed(2)}h`).join(', ')}
-      - Top 5 jogos mais jogados: ${infos.shorterTop5Games.map((g) => `${g.name}: ${g.hours.toFixed(2)}h`).join(', ')}`
-    ;
-
-
+  const AIMessage = infos.AImessage
   useEffect(() => {
     const genres = infos.totalTimePlayedPerGenre.map((g) => g.genre);
     const percentages = infos.totalTimePlayedPerGenre.map((g) =>
     g.time)
-
-    const fetchData = async () => {
-      const message = await gerarMensagemDaIA(prompt);
-
-      setAIMessage(message.candidates[0].content.parts[0].text);
-    };
-    fetchData();
 
     const el = document.getElementById("pie-chart");
     if (!el) return;
@@ -130,28 +107,6 @@ const GenreStats: FC<GenreStatsProps> = ({ infos }) => {
     
   }, [infos]);
 
-  async function gerarMensagemDaIA(prompt: string) {
-    try {
-      const response = await axios.post(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`,
-        {
-          contents: [{
-              parts: [{ text: prompt }]
-            }]
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-      return response.data;
-    } catch (error) {
-      console.error('Erro ao gerar resposta da IA:', error);
-      return 'Erro ao gerar mensagem da IA.';
-    }
-  }
-
   return (
     <div>
         <div className="bg-zinc-900 text-white p-6 rounded-2xl border-b-4 hover:shadow-zinc-900 mt-20 duration-300 border-amber-500 shadow-lg flex flex-col items-center gap-3 w-full max-w-2xl mx-auto">
@@ -169,7 +124,7 @@ const GenreStats: FC<GenreStatsProps> = ({ infos }) => {
             <div className="py-6 mt-4 grid place-items-center px-2">
               <div id="pie-chart"></div>
               <p className="mt-4 italic text-center text-gray-300 border-t border-gray-700 hover:border-gray-500 pt-4 px-4 duration-300">
-                {AIMessage || "Carregando..."}
+                {AIMessage}
               </p>
 
               <div className="w-full flex pt-4 px-4 items-start">

@@ -16,7 +16,6 @@ interface FinalAnalysisProps {
 const FinalAnalysis: FC<FinalAnalysisProps> = ({ infos }) => {
   console.log('FinalAnalysis infos →', infos);
   const [flipped, setFlipped] = useState(false);
-
   return (
     <div className="perspective-[1000px] w-full flex flex-col items-center pt-10  justify-center mt-20 mb-80">
       <motion.div

@@ -54,7 +54,8 @@ const Home: FC = () => {
     DateJoined: steamData.info["Date Joined"],
     DaysOnSteam: steamData.info["Days on Steam"],
     totalGames: steamData.info["total games"],
-    totalTimePlayed: steamData.info["total time played"]
+    totalTimePlayed: steamData.info["total time played"]?.[0] ?? 0,
+    AImessage: steamData.AI_response['steamHistory']
   } : null;
 
   const top5games = steamData ? steamData.info["top 5 games"] : null
@@ -72,18 +73,21 @@ const Home: FC = () => {
       time: Number(time),
     })),
     totalGames: steamData.info["total games"],
-    shorterTop5Games: simplifiedGames
+    shorterTop5Games: simplifiedGames,
+    AImessage: steamData.AI_response['genreStats']
   } : null;
 
   const formattedTopGamesInfo = steamData ? {
     totalGames: steamData.info["total games"],
-    top5games: steamData.info["top 5 games"]
+    top5games: steamData.info["top 5 games"],
+    AImessage: steamData.AI_response['topGames']
   } : null;
 
   const formattedCategoryInfo = steamData ? {
     ChartData: Object.entries(steamData.info["total time played per category"]).map(
       ([name, hours]) => ({ name, hours: Number(hours) })
-    )
+    ),
+    AImessage: steamData.AI_response['categoryStats']
   } : null;
 
   const playerType = steamData ? steamData.info["player type"] : null;
