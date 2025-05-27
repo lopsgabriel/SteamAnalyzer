@@ -1,21 +1,12 @@
 import re, requests
 from Steamlyzer.utils.constants import STEAM_API_KEY
 from Steamlyzer.utils.retry import make_request_with_retry
+
 def resolve_vanity_url(custom_url: str) -> str | None:
     url = (f"https://api.steampowered.com/ISteamUser/ResolveVanityURL/v1/"
            f"?key={STEAM_API_KEY}&vanityurl={custom_url}")
     data = make_request_with_retry(url)
-    if data and data["response"]["success"] == 1:
-        return data["response"]["steamid"]
-    return None
-
-def resolve_vanity_url(custom_url: str) -> str | None:
-    print("mandando 1 request 1")
-    resolve_url = f"https://api.steampowered.com/ISteamUser/ResolveVanityURL/v1/?key={STEAM_API_KEY}&vanityurl={custom_url}"
-    response = requests.get(resolve_url)
-    data = response.json()
-
-    if data["response"]["success"] == 1:
+    if data and data.get("response", {}).get("success", 0) == 1: #A utilização do .get() evita que o programa quebre com erro
         return data["response"]["steamid"]
     return None
 
