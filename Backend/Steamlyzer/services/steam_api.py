@@ -11,6 +11,8 @@ def resolve_vanity_url(custom_url: str) -> str | None:
     return None
 
 def verify_steamid_or_vanity_url(raw: str) -> str | None:
+    if not isinstance(raw, str):
+        return None
     # steamcommunity.com/profiles/ID64
     if m := re.search(r"steamcommunity\.com/profiles/(\d+)", raw):
         return m.group(1)
