@@ -1,4 +1,4 @@
-
+> 📘 This README is also available in [English](docs/README.en.md)
 # Steamlyzer API 🚀 *(em desenvolvimento)*
 
 **Status**: 🚧 Em desenvolvimento  
