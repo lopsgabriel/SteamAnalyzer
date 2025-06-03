@@ -5,7 +5,7 @@ from Steamlyzer.services import profile
 import aiohttp
 import asyncio
 
-@pytest.mark.asyncio # Marcador que indica que a função é assicrona
+@pytest.mark.asyncio # Marcador que indica que a função é assíncrona
 async def test_fetch_user_profile():
   """Testa a funcao fetch_user_profile"""
   steam_id = "123456789"
@@ -29,7 +29,7 @@ async def test_fetch_user_profile():
       assert "players" in result["response"]
 
 
-@pytest.mark.asyncio # Marcador que indica que a função é assicrona
+@pytest.mark.asyncio # Marcador que indica que a função é assíncrona
 async def test_fetch_user_profile_private():
   """Testa a funcao fetch_user_profile"""
   steam_id = "123456789"

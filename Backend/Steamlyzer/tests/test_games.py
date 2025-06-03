@@ -7,7 +7,7 @@ import json
 
 #-----------------------------------TESTES DE FETCH_GAME_GENRES---------------------------------------------------------
 
-@pytest.mark.asyncio # Marcador que indica que a função é assicrona
+@pytest.mark.asyncio # Marcador que indica que a função é assíncrona
 async def test_fetch_game_genres():
   """Testa a funcao fetch_game_genres"""
   game = {'appid': 730}
