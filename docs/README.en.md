@@ -56,6 +56,7 @@ git clone https://github.com/your-user/steamlyzer-api.git
 cd steamlyzer-api
 python -m venv venv
 source venv/bin/activate  # On Windows use venv\Scripts\activate
+cd Backend
 pip install -r requirements.txt
 python manage.py runserver
 ```
