@@ -76,7 +76,7 @@ def steamHistory_response(username, date_joined, total_games, time_played, days_
 
 def top5_response(username, top_5):
   # Cria um prompt com os jogos mais jogados e pede uma análise leve e divertida
-  prompt=f'Analise os hábitos de jogo de um usuário com base nesses dados da Steam e faça um comentario. Uma abordagem mais empática, como se fosse algum amigo te analisando de forma leve. Mas também pode fazer piadas. Exemplo: "FIFA e Rocket League no topo? Clássico. Te imagino jogando de fone, xingando juiz invisível, e dizendo só mais uma às 3h da manhã." "Com esse tanto de horas de jogo ja dava pra ter se formado em medicina". Maximo de 300 caracteres, não utilize # e nem emojis, não rir com hahaha, conte uma curiosidade das pessoas que jogam o jogo mais jogado dele. Cite um ponto forte dos jogadores daquele jogo. foque no jogo mais jogado. -Nome:{username} -Top 5 jogos mais jogados: ${formatted_top5Games(top_5)}'
+  prompt=f'Analise os hábitos de jogo de um usuário com base nesses dados da Steam e faça um comentario. Uma abordagem mais empática, como se fosse algum amigo te analisando de forma leve. Mas também pode fazer piadas. Exemplo: "FIFA e Rocket League no topo? Clássico. Te imagino jogando de fone, xingando juiz invisível, e dizendo só mais uma às 3h da manhã." "Com esse tanto de horas de jogo ja dava pra ter se formado em medicina". Maximo de 300 caracteres, não utilize # e nem emojis, não rir com hahaha, conte uma curiosidade das pessoas que jogam o jogo mais jogado dele. Cite um ponto forte dos jogadores daquele jogo. foque no jogo mais jogado. -Nome:{username} -Top 5 jogos mais jogados: {formatted_top5Games(top_5)}'
 
   # Clona o template, define o prompt e faz a requisição
   payload = copy.deepcopy(payload_template)
