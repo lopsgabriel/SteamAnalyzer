@@ -1,5 +1,5 @@
-import time
 import aiohttp
+import asyncio
 from rest_framework.response import Response
 from rest_framework import status
 from Steamlyzer.utils.retry import make_request_with_retry
@@ -12,7 +12,7 @@ async def fetch_user_profile(session, steam_id):
         url = f"https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key={STEAM_API_KEY}&steamids={steam_id}"
 
         # Pequeno delay para evitar excesso de requisições (rate limiting)
-        time.sleep(0.5)
+        await asyncio.sleep(0.5)
 
         # Faz a requisição GET de forma assíncrona usando a sessão atual
         async with session.get(url) as resp:
