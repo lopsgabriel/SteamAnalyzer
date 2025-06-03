@@ -50,7 +50,8 @@ async def test_fetch_game_genres_api_error():
     # Espera-se que a função retorne valores vazios
     expected_result = {'categories': '', 'genres': ''}
 
-    with patch("aiohttp.ClientSession.get", return_value=AsyncMock(__aenter__=AsyncMock(return_value=mock_response))):
+    with patch("Steamlyzer.services.games.make_request_with_retry", return_value=None), \
+         patch("aiohttp.ClientSession.get", return_value=AsyncMock(__aenter__=AsyncMock(return_value=mock_response))):
         async with aiohttp.ClientSession() as session:
             result = await games.fetch_game_genres(session, game)
             assert result == expected_result
