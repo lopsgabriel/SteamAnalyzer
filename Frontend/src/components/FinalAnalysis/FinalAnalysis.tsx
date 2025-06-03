@@ -43,7 +43,7 @@ const FinalAnalysis: FC<FinalAnalysisProps> = ({ infos }) => {
         <div className="absolute w-full h-full backface-hidden rounded-xl text-white transform " style={{ transform: 'rotateY(180deg)' }}>
           <Card infos={infos} />
         </div>
-      </ motion.div>
+        </motion.div>
     </div>
   );
 
