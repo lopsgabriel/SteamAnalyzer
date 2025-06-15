@@ -9,4 +9,3 @@ def make_request_with_retry(url, retries=5, delay=1):
         time.sleep(delay)
         delay *= 2
     return None
-
