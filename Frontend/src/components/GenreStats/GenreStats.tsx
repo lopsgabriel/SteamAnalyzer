@@ -109,12 +109,12 @@ const GenreStats: FC<GenreStatsProps> = ({ infos }) => {
 
   return (
     <div>
-        <div className="bg-zinc-900 text-white p-6 rounded-2xl border-b-4 hover:shadow-zinc-900 mt-20 duration-300 border-amber-500 shadow-lg flex flex-col items-center gap-3 w-full max-w-2xl mx-auto">
+        <div className="section-container mt-20">
           <MotionDiv>
           {/* Header */}
             <div className="relative mx-4 mt-4 flex flex-col items-center justify-center gap-4 overflow-hidden rounded-none bg-transparent bg-clip-border text-white shadow-none md:flex-row md:items-center">
               <div className="flex items-center justify-center">
-                <h6 className="text-2xl font-bold  hover:text-amber-400 transition-colors">
+                <h6 className="section-title">
                   Gêneros em Destaque
                 </h6>
               </div>
@@ -123,13 +123,13 @@ const GenreStats: FC<GenreStatsProps> = ({ infos }) => {
           {/* Pie Chart and Message */}
             <div className="py-6 mt-4 grid place-items-center px-2">
               <div id="pie-chart"></div>
-              <p className="mt-4 italic text-center text-gray-300 border-t border-gray-700 hover:border-gray-500 pt-4 px-4 duration-300">
+              <p className="section-message">
                 {AIMessage}
               </p>
 
               <div className="w-full flex pt-4 px-4 items-start">
                 <RiInformationLine className="w-4 h-4 text-gray-400 flex-none"/>
-                <p className=" mx-2 italic text-gray-400 text-sm hover:text-gray-300 duration-300">
+                <p className="info-text">
                   {`O gráfico mostra quais foram os generos mais jogados em horas. É possivel que um jogo tenha varios generos ao mesmo tempo.` }
                 </p>
               </div>

@@ -24,13 +24,13 @@ const SteamHistory: FC<SteamHistoryProps> = ({ info }) => {
   const AImessage = info.AImessage
 
   return (
-    <div className="bg-zinc-900 text-white p-6 rounded-2xl border-b-4 hover:shadow-zinc-900 mt-10 duration-300 border-amber-500 shadow-lg flex flex-col items-center gap-3 w-full max-w-2xl mx-auto">
+    <div className="section-container mt-10">
       <img
         src={user.avatar ?? ''}
         alt={`${user.Username ?? ''}'s avatar`}
         className="w-24 h-24 rounded-full hover:scale-110 duration-300" 
       />
-      <a href={user.profileURL ?? ''} target="_blank" className="text-2xl font-bold  hover:text-amber-400 transition-colors">
+      <a href={user.profileURL ?? ''} target="_blank" className="section-title">
         {user.Username}
       </a>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-2 text-sm text-center w-full">
@@ -55,7 +55,7 @@ const SteamHistory: FC<SteamHistoryProps> = ({ info }) => {
           <p className="text-gray-400">Horas </p>
         </div>
       </div>
-      <p className="mt-4 mx-4 italic text-center text-gray-300 border-t border-gray-700 hover:border-gray-500 duration-300 pt-4 px-4 whitespace-pre-wrap break-words max-h-48 overflow-y-auto">
+      <p className="section-message mx-4 whitespace-pre-wrap break-words max-h-48 overflow-y-auto">
         {AImessage}
       </p>
     </div>
