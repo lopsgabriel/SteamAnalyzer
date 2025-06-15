@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from Steamlyzer.utils.retry import make_request_with_retry
 from Steamlyzer.utils.constants import STEAM_API_KEY
+import requests
 
 # Função assíncrona que busca os dados do perfil do usuário na API da Steam
 async def fetch_user_profile(session, steam_id):
@@ -16,12 +17,17 @@ async def fetch_user_profile(session, steam_id):
 
         # Faz a requisição GET de forma assíncrona usando a sessão atual
         async with session.get(url) as resp:
-
             # Se a resposta não for 200 (OK), tenta uma nova requisição com a função de retry
             if resp.status != 200:
                 data = make_request_with_retry(url)
-                if data:
-                    return data
+                if data and isinstance(data, requests.Response):
+                    if data.status_code == 429:
+                        return Response({"error": "A API da Steam está limitando o número de requisições. Tente novamente em alguns segundos."},
+                                        status=429)
+                    try:
+                        return data.json()
+                    except Exception:
+                        return Response({"error": "Resposta inesperada da API da Steam."}, status=500)
 
                 # Caso ainda assim falhe, retorna o erro como texto na resposta
                 error_message = await resp.text()
