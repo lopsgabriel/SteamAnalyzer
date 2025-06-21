@@ -3,7 +3,7 @@
 
 **Status**: 🚧 Under development  
 **Current version**: `0.x`  
-**Last update**: `2025-05-30`
+**Last update**: `2025-06-22`
 
 ---
 
@@ -61,6 +61,20 @@ pip install -r requirements.txt
 python manage.py runserver
 ```
 
+## 🖥️ Running the Frontend
+
+Make sure Node.js is installed. From the project root execute:
+
+```bash
+cd Frontend
+npm install
+npm run dev
+```
+
+Vite will start the development server at `http://localhost:5173`. For more
+details, including how to build for production, see
+[../Frontend/README.md](../Frontend/README.md).
+
 ---
 
 ## 🔍 Available Endpoints
@@ -97,3 +111,9 @@ We follow the commit message convention defined by [Conventional Commits](https:
 > 🔧 This is a **work-in-progress** version of the API.  
 > Some features are incomplete or subject to change.  
 > Use at your own risk! Feedback and contributions are welcome.
+
+---
+
+## 📄 License
+
+Distributed under the MIT License. See [LICENSE](../LICENSE) for more details.
