@@ -3,7 +3,7 @@
 
 **Status**: 🚧 Em desenvolvimento  
 **Versão atual**: `0.x`  
-**Última atualização**: `30/05/2025`
+**Última atualização**: `22/06/2025`
 
 ---
 
@@ -59,6 +59,21 @@ pip install -r requirements.txt
 python manage.py runserver
 ```
 
+## 🖥️ Rodando o Frontend
+
+É necessário ter o Node.js instalado para iniciar a interface web. Dentro da
+raiz do projeto execute:
+
+```bash
+cd Frontend
+npm install
+npm run dev
+```
+
+O Vite iniciará o servidor de desenvolvimento em `http://localhost:5173`. Para
+mais instruções, como gerar a build de produção, consulte
+[Frontend/README.md](Frontend/README.md).
+
 ---
 
 ## 🔍 Endpoints disponíveis
@@ -94,3 +109,9 @@ Estamos seguindo os padrões de commit descritos em [Conventional Commits](https
 > 🔧 Esta é uma **versão em desenvolvimento** da API.  
 > Algumas funcionalidades estão incompletas ou sujeitas a alterações significativas.  
 > Use por sua conta e risco! Contribuições e feedbacks são bem-vindos.
+
+---
+
+## 📄 Licença
+
+Distribuído sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
