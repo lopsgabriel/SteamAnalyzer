@@ -38,11 +38,11 @@ const Home: FC = () => {
     try {
       setErrorMessage(null);
       setLoading(true);
-      const response = await axios.get(`http://127.0.0.1:8000/steam/analyze/?steam_id=${steamID}`);
+      const response = await axios.get(`https://steamanalyzer-production.up.railway.app/steam/analyze/?steam_id=${steamID}`);
       setSteamData(response.data);
     } catch (error: any) {
       setLoading(false);
-      if (error.response?.status === 400) {
+      if (error.response?.status === 400 || error.response?.status === 429) {
         setErrorMessage(error.response?.data["error"]);
       } else {
         setErrorMessage("Oops! Algo deu errado, tente novamente.");
@@ -99,7 +99,7 @@ const Home: FC = () => {
       const [label, value] = Object.entries(o)[0];
       return { label, value };
     }),
-    Img: `http://127.0.0.1:8000${playerType.img}`
+    Img: playerType.img
   } : null;
 
   return (
