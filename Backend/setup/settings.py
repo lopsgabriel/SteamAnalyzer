@@ -125,6 +125,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  # Permite o front-end local acessar a API
     "http://127.0.0.1:5173",
+    "https://steam-analyzer-seven.vercel.app",
 ]
 
 CORS_ALLOW_HEADERS = [
