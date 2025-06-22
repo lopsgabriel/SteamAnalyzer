@@ -9,7 +9,7 @@ import aiohttp
 import nest_asyncio
 import requests
 from collections import Counter
-from setup.utils.player_type_logic import define_player_type
+from Steamlyzer.utils.player_type_logic import define_player_type
 from Steamlyzer.services.games import gather_data_in_batches
 from Steamlyzer.services.profile import gather_user_profile
 from Steamlyzer.services.steam_api import verify_steamid_or_vanity_url

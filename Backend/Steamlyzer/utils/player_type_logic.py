@@ -1,6 +1,5 @@
-base_url = '/static/images/'
-
-
+AWS_S3_CUSTOM_DOMAIN = 'https://steam-analyzer-static.s3.us-east-2.amazonaws.com'
+base_url = f'{AWS_S3_CUSTOM_DOMAIN}/static/images/'
 
 def define_player_type(genres_hours, categories_hours):
     top_genre = max(genres_hours, key=genres_hours.get)
