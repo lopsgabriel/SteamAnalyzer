@@ -107,7 +107,6 @@ async def test_fetch_details():
 
         async with aiohttp.ClientSession() as session:
             result = await games.fetch_details(session, game1, steam_id, most_played_games)
-            print(result)
             assert result == expected_result
 
 
@@ -146,7 +145,6 @@ async def test_fetch_details_low_playtime():
      patch("Steamlyzer.services.games.fetch_game_genres", new = mock_fetch_game_genres):
     async with aiohttp.ClientSession() as session:
       result = await games.fetch_details(session, game1, steam_id, most_played_games)
-      print(result)
       assert result == expected_result
 
 @pytest.mark.asyncio
@@ -180,7 +178,6 @@ async def test_fetch_details_achievements_error():
      patch("Steamlyzer.services.games.fetch_game_genres", new = mock_fetch_game_genres):
     async with aiohttp.ClientSession() as session:
       result = await games.fetch_details(session, game1, steam_id, most_played_games)
-      print(result)
       assert result == expected_result
 
 @pytest.mark.asyncio
@@ -221,7 +218,6 @@ async def test_fetch_details_game_not_in_most_played_games():
      patch("Steamlyzer.services.games.fetch_game_genres", new = mock_fetch_game_genres):
     async with aiohttp.ClientSession() as session:
       result = await games.fetch_details(session, game1, steam_id, most_played_games)
-      print(result)
       assert result == expected_result
 
 @pytest.mark.asyncio
@@ -251,7 +247,6 @@ async def test_fetch_details_low_playtime_not_in_most_played_games():
   with patch("Steamlyzer.services.games.fetch_game_genres", new = mock_fetch_game_genres):
     async with aiohttp.ClientSession() as session:
       result = await games.fetch_details(session, game1, steam_id, most_played_games)
-      print(result)
       assert result == expected_result
 
 #-----------------------------------TESTES DE GATHER_DATA------------------------------------------------------------------
