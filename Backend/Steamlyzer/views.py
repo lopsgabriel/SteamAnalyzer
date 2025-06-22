@@ -36,7 +36,7 @@ class SteamAnalyzerViewSet(ViewSet):
                 user_profile_data = asyncio.run(gather_user_profile(steam_id))
                 if not isinstance(user_profile_data, dict):
                     if hasattr(user_profile_data, 'status_code') and user_profile_data.status_code == 429:
-                        return Response({"error": "Muitas requisições. Tente novamente mais tarde."}, status=429)
+                        return Response({"error": "Estamos recebendo muitas solicitações no momento. Por favor, tente novamente em alguns minutos."}, status=429)
                     return Response({"error": "Erro ao obter perfil do usuário."}, status=500)
 
                 user_data = user_profile_data.get("response", {}).get("players", [{}])[0]
