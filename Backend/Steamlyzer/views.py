@@ -35,12 +35,12 @@ class SteamAnalyzerViewSet(ViewSet):
                 # Executa o async
                 user_profile_data = asyncio.run(gather_user_profile(steam_id))
                 if not isinstance(user_profile_data, dict):
-                    print("user_profile_data inválido:", user_profile_data)
+                    if hasattr(user_profile_data, 'status_code') and user_profile_data.status_code == 429:
+                        return Response({"error": "Muitas requisições. Tente novamente mais tarde."}, status=429)
                     return Response({"error": "Erro ao obter perfil do usuário."}, status=500)
 
                 user_data = user_profile_data.get("response", {}).get("players", [{}])[0]
             except Exception as e:
-                print("Erro ao buscar dados da Steam:", e)
                 return Response({"error": "Erro ao buscar dados da Steam 2"}, status=500)
 
             #busca jogos do usuario pela steamID          
@@ -51,8 +51,6 @@ class SteamAnalyzerViewSet(ViewSet):
             if response.status_code != 200:
                 retried_response = make_request_with_retry(url)
                 if retried_response is None or retried_response.status_code != 200:
-                    print("Erro ao chamar API da Steam:", retried_response.status_code if retried_response else "None", 
-                        retried_response.text if retried_response else "Sem resposta")
                     return Response({"error": "Erro ao buscar jogos da Steam"}, status=500)
                 response = retried_response
 
@@ -60,7 +58,6 @@ class SteamAnalyzerViewSet(ViewSet):
             return Response({"error": "Erro ao buscar dados da Steam"}, status=500)
 
         if response.status_code != 200:
-            print("Erro ao chamar API da Steam:", response.status_code, response.text)
             return Response({"error": "Erro ao buscar jogos da Steam"}, status=500)
         data = response.json()
 
