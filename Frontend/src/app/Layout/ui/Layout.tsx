@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { LayoutFooter, LayoutHeader } from "@/widgets";
+import { LayoutFooter } from "@/widgets";
 import { Outlet } from "react-router-dom";
 
 const Layout: FC = () => {

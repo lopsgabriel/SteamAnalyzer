@@ -58,7 +58,7 @@ export function ChartSection( { chartData }: ChartSectionProps ) {
               onMouseLeave={() => setActiveIndex(null)}
             >
               {
-                chartData.map((entry, index) => (
+                chartData.map((_, index) => (
                   <Cell
                     key={`cell-${index}`}
                     fill={activeIndex === index ? "#f59e0b" : "#27272a"}
