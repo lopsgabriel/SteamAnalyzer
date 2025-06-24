@@ -51,6 +51,7 @@ const Home: FC = () => {
     }
   }
 
+  
   const formattedSteamInfo = steamData ? {
     DateJoined: steamData.info["Date Joined"],
     DaysOnSteam: steamData.info["Days on Steam"],
