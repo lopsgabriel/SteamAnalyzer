@@ -15,6 +15,7 @@ const Home: FC = () => {
   useEffect(() => {
     if (steamData && analysisRef.current) {
       analysisRef.current.scrollIntoView({ behavior: "smooth" });
+      console.log(steamData)
     }
     if (steamData) {
       setErrorMessage(null);
@@ -54,7 +55,7 @@ const Home: FC = () => {
     DateJoined: steamData.info["Date Joined"],
     DaysOnSteam: steamData.info["Days on Steam"],
     totalGames: steamData.info["total games"],
-    totalTimePlayed: steamData.info["total time played"]?.[0] ?? 0,
+    totalTimePlayed: steamData.info["total time played"],
     AImessage: steamData.AI_response['steamHistory']
   } : null;
 
