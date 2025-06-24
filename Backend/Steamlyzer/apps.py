@@ -1,3 +1,4 @@
+"""Configuração da aplicação Steamlyzer."""
 from django.apps import AppConfig
 
 
