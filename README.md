@@ -1,9 +1,9 @@
 > 📘 This README is also available in [English](docs/README.en.md)
-# Steamlyzer API 🚀 *(em desenvolvimento)*
+# Steamlyzer API 🚀
 
-**Status**: 🚧 Em desenvolvimento  
-**Versão atual**: `0.x`  
-**Última atualização**: `22/06/2025`
+**Status**: ✅ Versão 1.0 concluída 
+**Versão atual**: `1.0`  
+**Última atualização**: `23/06/2025`
 
 ---
 
