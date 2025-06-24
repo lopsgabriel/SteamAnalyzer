@@ -1,5 +1,5 @@
 > 📘 This README is also available in [English](docs/README.en.md)
-# Steamlyzer API 🚀
+# Steam Analyzer API 🚀
 
 **Status**: ✅ Versão 1.0 concluída 
 **Versão atual**: `1.0`  
@@ -9,7 +9,7 @@
 
 ## 📌 Descrição
 
-A **Steamlyzer API** é uma aplicação que analisa o perfil de um usuário da Steam com base em dados públicos fornecidos pela Steam Web API. A proposta é oferecer uma análise profunda do estilo de jogo do usuário, utilizando informações como a biblioteca de jogos do jogador, gêneros jogados, categorias, tempo de jogo e conquistas. Ao final da análise, o sistema define o "tipo de jogador" baseado em seus hábitos.
+A **Steam Analyzer API** é uma aplicação que analisa o perfil de um usuário da Steam com base em dados públicos fornecidos pela Steam Web API. A proposta é oferecer uma análise profunda do estilo de jogo do usuário, utilizando informações como a biblioteca de jogos do jogador, gêneros jogados, categorias, tempo de jogo e conquistas. Ao final da análise, o sistema define o "tipo de jogador" baseado em seus hábitos.
 
 ---
 
