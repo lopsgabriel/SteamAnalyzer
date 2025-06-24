@@ -51,7 +51,7 @@ const Home: FC = () => {
     }
   }
 
-  
+
   const formattedSteamInfo = steamData ? {
     DateJoined: steamData.info["Date Joined"],
     DaysOnSteam: steamData.info["Days on Steam"],
@@ -135,7 +135,7 @@ const Home: FC = () => {
                 </form>
                 <FontAwesomeIcon className="absolute left-2.5 top-10 text-zinc-300" icon={faSteam} />
                 <div className="flex flex-col pt-4 pl-4">
-                  <p className="text-slate-400 font-sora">Voce pode usar:</p>
+                  <p className="text-slate-400 font-sora">Você pode usar:</p>
                   <div className="flex gap-6 pt-1">
                     <div className="flex items-center gap-2">
                       <span className="w-1 h-1 bg-slate-400 rounded-full"></span>
